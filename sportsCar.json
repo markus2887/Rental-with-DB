@@ -1,0 +1,31 @@
+[ {
+  "price" : 5500.0,
+  "description" : "Utsökt skick, En upplevelse du aldrig glömmer.",
+  "id" : 10,
+  "brand" : "Ferrari",
+  "model" : "F50",
+  "year" : "1997",
+  "color" : "Röd",
+  "sportSeats" : true,
+  "hp" : 520
+}, {
+  "price" : 3000.0,
+  "description" : "Om du vill ha en körupplevelse bortom alla drömmar.",
+  "id" : 11,
+  "brand" : "Porsche",
+  "model" : "911 GT3",
+  "year" : "2022",
+  "color" : "Orange",
+  "sportSeats" : true,
+  "hp" : 510
+}, {
+  "price" : 10000.0,
+  "description" : "Värstingen",
+  "id" : 12,
+  "brand" : "Koenigsegg",
+  "model" : "Jesko",
+  "year" : "2025",
+  "color" : "Vit",
+  "sportSeats" : true,
+  "hp" : 1600
+} ]

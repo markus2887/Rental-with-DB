@@ -1,0 +1,91 @@
+[ {
+  "id" : 1,
+  "name" : "Adam",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 2,
+  "name" : "Sam",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 3,
+  "name" : "Kalle",
+  "level" : 2,
+  "history" : ""
+}, {
+  "id" : 4,
+  "name" : "Markus",
+  "level" : 2,
+  "history" : ""
+}, {
+  "id" : 5,
+  "name" : "Smocke",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 6,
+  "name" : "MimmiPigg",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 7,
+  "name" : "MussePigg",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 8,
+  "name" : "KalleAnka",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 9,
+  "name" : "Knatte",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 10,
+  "name" : "Fnatte",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 11,
+  "name" : "Tjatte",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 12,
+  "name" : "MårtenGås",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 13,
+  "name" : "FarmorAnka",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 14,
+  "name" : "FarbrorJoakim",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 15,
+  "name" : "VonPluring",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 16,
+  "name" : "Hulken",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 17,
+  "name" : "IronMan",
+  "level" : 1,
+  "history" : ""
+}, {
+  "id" : 18,
+  "name" : "SpiderMan",
+  "level" : 1,
+  "history" : ""
+} ]
