@@ -21,6 +21,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.converter.BooleanStringConverter;
 import javafx.util.converter.DoubleStringConverter;
@@ -38,16 +39,27 @@ public class Main extends Application {
 
     private Label labelResult = new Label();
     private Label labelRevenue = new Label();
+    private Label labelErrorNewCar = new Label();
+    private Label labelErrorNewSCar = new Label();
+    private Label labelErrorRent = new Label();
+    private Label labelErrorMember =  new Label();
     private double totalRevenue = 0;
     private String hp = "Hästkrafter";
     private String price = "Pris";
     private String lvl = "Användarnivå 1-2";
+    private String carInput = "Bilnummer";
+    private String daysToRent = "Antal dagar hyra";
+    private String rentalNumber = "Hyrnummer";
 
     @Override
     public void start(Stage stage) throws Exception {
 
         labelResult.setPadding(new Insets(10,10,10,10));
         labelResult.setLineSpacing(10);
+        labelErrorNewCar.setPadding(new Insets(10,10,10,10));
+        labelErrorNewSCar.setPadding(new Insets(10,10,10,10));
+        labelErrorRent.setPadding(new Insets(10,10,10,10));
+        labelErrorMember.setPadding(new Insets(10,10,10,10));
 
         Member member = new Member();
         MemberRegistry mReg = new MemberRegistry();
@@ -176,9 +188,17 @@ public class Main extends Application {
         //Knappar
         Button addButton = new Button("Lägg till medlem");
         addButton.setOnAction(e -> {
-            val.isInt(lvlInput, lvl);
-            mSer.addButtonClicked(nameInput, lvlInput, mTable, labelResult);
-
+            if (nameInput.getText().isEmpty()) {
+                labelErrorMember.setText("Alla fält måste fyllas i!");
+                labelErrorMember.setTextFill(Color.RED);
+                nameInput.setStyle("-fx-border-color:red;");
+            } else {
+                labelErrorMember.setText("");
+                //labelErrorMember.setStyle(null);
+                nameInput.setStyle(null);
+                val.isInt(lvlInput, lvl);
+                mSer.addButtonClicked(nameInput, lvlInput, mTable, labelResult);
+            }
         });
 
         Button deleteButton = new Button("Ta bort");
@@ -191,7 +211,7 @@ public class Main extends Application {
         HBox hBox = new HBox();
         hBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
         hBox.setSpacing(10);
-        hBox.getChildren().addAll(nameInput, lvlInput, addButton, deleteButton);
+        hBox.getChildren().addAll(nameInput, lvlInput, addButton, deleteButton, labelErrorMember);
 
         HBox hBox2 = new HBox();
         hBox2.setPadding(new javafx.geometry.Insets(10,10,10,10));
@@ -431,6 +451,7 @@ public class Main extends Application {
         //Sportbil
         TextField sportSeatsInput = new TextField();
         sportSeatsInput.setPromptText("Sportstolar(true eller false)");
+        sportSeatsInput.setMinWidth(200);
         TextField hpInput = new TextField();
         hpInput.setMinWidth(200);
         hpInput.setPromptText("Hästkrafter");
@@ -439,16 +460,81 @@ public class Main extends Application {
 
         Button addSportsCarButton = new Button("Lägg till sportbil");
         addSportsCarButton.setOnAction(e -> {
-            val.isInt(hpInput, hp);
-            val.isDouble(priceInput, price);
-            inv.addSportsCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, sportSeatsInput, hpInput, cTable2);
+                    if (descriptionInput.getText().isEmpty()) {
+                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                        labelErrorNewSCar.setTextFill(Color.RED);
+                        descriptionInput.setStyle("-fx-border-color:red;");
+                    } else if (brandInput.getText().isEmpty()) {
+                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                        labelErrorNewSCar.setTextFill(Color.RED);
+                        brandInput.setStyle("-fx-border-color:red;");
+                    } else if (modelInput.getText().isEmpty()) {
+                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                        labelErrorNewSCar.setTextFill(Color.RED);
+                        modelInput.setStyle("-fx-border-color:red;");
+                    } else if (yearInput.getText().isEmpty()) {
+                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                        labelErrorNewSCar.setTextFill(Color.RED);
+                        yearInput.setStyle("-fx-border-color:red;");
+                    } else if (colorInput.getText().isEmpty()) {
+                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                        labelErrorNewSCar.setTextFill(Color.RED);
+                        colorInput.setStyle("-fx-border-color:red;");
+                    } else if (sportSeatsInput.getText().isEmpty()) {
+                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                        labelErrorNewSCar.setTextFill(Color.RED);
+                        sportSeatsInput.setStyle("-fx-border-color:red;");
+                    }
+                    else {
+                        labelErrorNewSCar.setText("");
+                        descriptionInput.setStyle(null);
+                        brandInput.setStyle(null);
+                        modelInput.setStyle(null);
+                        yearInput.setStyle(null);
+                        colorInput.setStyle(null);
+                        sportSeatsInput.setStyle(null);
+
+                        val.isInt(hpInput, hp);
+                        val.isDouble(priceInput, price);
+                        inv.addSportsCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, sportSeatsInput, hpInput, cTable2);
+                    }
         });
         //Slut sportbil
 
         Button addCarButton = new Button("Lägg till bil");
         addCarButton.setOnAction(e -> {
-            val.isDouble(priceInput, price);
-            inv.addCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, cTable);
+            if (descriptionInput.getText().isEmpty()) {
+                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewSCar.setTextFill(Color.RED);
+                descriptionInput.setStyle("-fx-border-color:red;");
+            } else if (brandInput.getText().isEmpty()) {
+                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewSCar.setTextFill(Color.RED);
+                brandInput.setStyle("-fx-border-color:red;");
+            } else if (modelInput.getText().isEmpty()) {
+                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewSCar.setTextFill(Color.RED);
+                modelInput.setStyle("-fx-border-color:red;");
+            } else if (yearInput.getText().isEmpty()) {
+                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewSCar.setTextFill(Color.RED);
+                yearInput.setStyle("-fx-border-color:red;");
+            } else if (colorInput.getText().isEmpty()) {
+                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewSCar.setTextFill(Color.RED);
+                colorInput.setStyle("-fx-border-color:red;");
+            }
+
+            else {
+                labelErrorNewSCar.setText("");
+                descriptionInput.setStyle(null);
+                brandInput.setStyle(null);
+                modelInput.setStyle(null);
+                yearInput.setStyle(null);
+                colorInput.setStyle(null);
+                val.isDouble(priceInput, price);
+                inv.addCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, cTable);
+            }
         });
 
         HBox hBoxC = new HBox();
@@ -459,12 +545,12 @@ public class Main extends Application {
         HBox hBoxC2 = new HBox();
         hBoxC2.setPadding(new javafx.geometry.Insets(10,10,10,10));
         hBoxC2.setSpacing(10);
-        hBoxC2.getChildren().addAll(descriptionInput, addCarButton);
+        hBoxC2.getChildren().addAll(descriptionInput, addCarButton, labelErrorNewCar);
 
         HBox hBoxC3 = new HBox();
         hBoxC3.setPadding(new javafx.geometry.Insets(10,10,10,10));
         hBoxC3.setSpacing(10);
-        hBoxC3.getChildren().addAll(sportSeatsInput, hpInput, addSportsCarButton);
+        hBoxC3.getChildren().addAll(sportSeatsInput, hpInput, addSportsCarButton, labelErrorNewSCar);
 
         VBox vBoxCars = new VBox();
         vBoxCars.setSpacing(10);
@@ -520,7 +606,7 @@ public class Main extends Application {
         });
 
         TableColumn<Rental, String> startColumnR = new TableColumn<>("Starttid");
-        //startColumnR.setMinWidth(200);
+        startColumnR.setMinWidth(170);
         startColumnR.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         startColumnR.setCellFactory(TextFieldTableCell.forTableColumn());
         startColumnR.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Rental, String>>() {
@@ -533,7 +619,7 @@ public class Main extends Application {
         });
 
         TableColumn<Rental, String> endColumnR = new TableColumn<>("Sluttid");
-        //endColumnR.setMinWidth(200);
+        endColumnR.setMinWidth(170);
         endColumnR.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         endColumnR.setCellFactory(TextFieldTableCell.forTableColumn());
         endColumnR.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Rental, String>>() {
@@ -603,18 +689,29 @@ public class Main extends Application {
 
         TextField nameInputR = new TextField();
         nameInputR.setPromptText("Medlemsnamn");
+        nameInputR.setMinWidth(200);
         TextField carInputR = new TextField();
         carInputR.setPromptText("Bilnummer");
-        TextField priceInputR = new TextField();
-        priceInputR.setPromptText("Pris/timme");
+        carInputR.setMinWidth(200);
 
         Button addButtonR = new Button("Hyr bil");
-        addButtonR.setOnAction(e -> rSer.rentButtonClicked(nameInputR, carInputR, priceInputR, rTable));
+        addButtonR.setOnAction(e -> {
+            if (nameInputR.getText().isEmpty()) {
+                labelErrorRent.setText("Alla fält måste fyllas i!");
+                labelErrorRent.setTextFill(Color.RED);
+                descriptionInput.setStyle("-fx-border-color:red;");
+            } else {
+                labelErrorRent.setText("");
+                labelErrorRent.setStyle(null);
+                val.isInt(carInputR, carInput);
+                rSer.rentButtonClicked(nameInputR, carInputR, rTable);
+            }
+        });
 
         HBox hBoxR = new HBox();
         hBoxR.setPadding(new javafx.geometry.Insets(10,10,10,10));
         hBoxR.setSpacing(10);
-        hBoxR.getChildren().addAll(nameInputR, carInputR, priceInputR, addButtonR);
+        hBoxR.getChildren().addAll(nameInputR, carInputR, addButtonR, labelErrorRent);
 
         TextField rNumberInput = new TextField();
         rNumberInput.setPromptText("Hyrnummer");
@@ -623,7 +720,12 @@ public class Main extends Application {
 
         Button endButtonR = new Button("Avsluta hyrperiod");
         endButtonR.setOnAction(e -> {
+
+            val.isInt(rNumberInput, rentalNumber);
+            val.isInt(daysInput, daysToRent);
             rSer.updateRental(rNumberInput, daysInput, rTable);
+            rNumberInput.clear();
+            daysInput.clear();
         });
 
         HBox hBoxR2 = new HBox();
@@ -651,6 +753,8 @@ public class Main extends Application {
         inv.getSportsCars();
         inv.runJsonCars();
         inv.runJsonSportsCars();
+
+        //Lägger in en testuthyrning
         rSer.rentalList.add(new Rental("Markus", 2, "", "", 500, 1500, 2, 3));
 
     }

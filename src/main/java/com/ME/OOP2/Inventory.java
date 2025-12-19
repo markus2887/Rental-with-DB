@@ -22,8 +22,8 @@ public class Inventory {
     }
     //List<Car> carList = new ArrayList<>();
     //List<SportsCar> sportsCarList = new ArrayList<>();
-    ObservableList<Car> carList = FXCollections.observableArrayList();
-    ObservableList<SportsCar> sportsCarList = FXCollections.observableArrayList();
+    //ObservableList<Car> carList = FXCollections.observableArrayList();
+    //ObservableList<SportsCar> sportsCarList = FXCollections.observableArrayList();
 
     public ObservableList<SportsCar> runJsonSportsCars() throws Exception {
         //Json funktionalitet
@@ -40,6 +40,8 @@ public class Inventory {
         return sportsCarList;
     }
 
+    ObservableList<SportsCar> sportsCarList = runJsonSportsCars();
+
     public ObservableList<Car> runJsonCars() throws Exception {
         //Json funktionalitet
         ObjectMapper mapper = new ObjectMapper();
@@ -55,6 +57,7 @@ public class Inventory {
         return carList;
     }
 
+    ObservableList<Car> carList = runJsonCars();
 
     public ObservableList<Car> getCars() {
         /* Hämtas från car.json istället.

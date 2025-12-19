@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public class RentalService {
 
+    private String time;
     ObservableList<Rental> rentalList = FXCollections.observableArrayList();
     MembershipService mSer = new MembershipService();
     MemberRegistry mReg = new MemberRegistry();
@@ -27,24 +28,38 @@ public class RentalService {
     public RentalService() throws Exception {
     }
 
-    public void rentButtonClicked(TextField nameInputR, TextField carInputR, TextField priceInputR, TableView<Rental> rTable) {
+    public void rentButtonClicked(TextField nameInputR, TextField carInputR, TableView<Rental> rTable) {
         String name = nameInputR.getText();
         int car = Integer.parseInt(carInputR.getText());
-        double price = Double.parseDouble(priceInputR.getText());
-        //int lvl = Integer.parseInt(lvlInputR.getText());
         Member m = mSer.searchMemberR(mReg.membersList, name);
-        Car c = searchCar(car, inv.carList);
+        Car c = searchCar(car);
+        Car sc = searchSCar(car);
+        time = LocalDateTime.now().toString();
+        boolean bo = true;
+        if (searchCar(car) == null) {
 
-        String time = LocalDateTime.now().toString();
-
-        Rental newRental = new Rental(name, car, time, "", price, 0, m.getLevel(), 0);
-        rTable.getItems().add(newRental);
-        nameInputR.clear();
-        carInputR.clear();
-        priceInputR.clear();
+            Rental newRental = new Rental(name, car, time, "", sc.getPrice(), 0, m.getLevel(), 0);
+            rTable.getItems().add(newRental);
+            nameInputR.clear();
+            carInputR.clear();
+        }
+        else {
+            Rental newRental = new Rental(name, car, time, "", c.getPrice(), 0, m.getLevel(), 0);
+            rTable.getItems().add(newRental);
+            nameInputR.clear();
+            carInputR.clear();
+        }
     }
-    public Car searchCar(int car, ObservableList<Car> cars) {
-        Car foundCar = cars.stream()
+
+    public Car searchCar(int car) {
+        Car foundCar = inv.carList.stream()
+                .filter(c -> c.getId() == car)
+                .findFirst()
+                .orElse(null);
+        return foundCar;
+    }
+    public Car searchSCar(int car) {
+        Car foundCar = inv.sportsCarList.stream()
                 .filter(c -> c.getId() == car)
                 .findFirst()
                 .orElse(null);
