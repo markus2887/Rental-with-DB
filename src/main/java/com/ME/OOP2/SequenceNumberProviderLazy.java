@@ -5,7 +5,7 @@ public class SequenceNumberProviderLazy {
     private static SequenceNumberProviderLazy instance;
 
     private SequenceNumberProviderLazy() {
-        number = 13;
+        number = 12;
     }
     public static SequenceNumberProviderLazy getInstance(){
         if(instance==null){

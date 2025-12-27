@@ -2,6 +2,7 @@ package com.ME.OOP2;
 
 import com.ME.OOP2.entity.Car;
 import com.ME.OOP2.entity.Member;
+import com.ME.OOP2.entity.Movie;
 import com.ME.OOP2.entity.Rental;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,12 +34,12 @@ public class RentalService {
         int car = Integer.parseInt(carInputR.getText());
         Member m = mSer.searchMemberR(mReg.membersList, name);
         Car c = searchCar(car);
-        Car sc = searchSCar(car);
+        Movie mo = searchMovie(car);
         time = LocalDateTime.now().toString();
         boolean bo = true;
         if (searchCar(car) == null) {
 
-            Rental newRental = new Rental(name, car, time, "", sc.getPrice(), 0, m.getLevel(), 0);
+            Rental newRental = new Rental(name, car, time, "", mo.getPrice(), 0, m.getLevel(), 0);
             rTable.getItems().add(newRental);
             nameInputR.clear();
             carInputR.clear();
@@ -58,12 +59,12 @@ public class RentalService {
                 .orElse(null);
         return foundCar;
     }
-    public Car searchSCar(int car) {
-        Car foundCar = inv.sportsCarList.stream()
+    public Movie searchMovie(int car) {
+        Movie foundMovie = inv.movieList.stream()
                 .filter(c -> c.getId() == car)
                 .findFirst()
                 .orElse(null);
-        return foundCar;
+        return foundMovie;
     }
 
     public Optional<Rental> findRentalById(int id) {

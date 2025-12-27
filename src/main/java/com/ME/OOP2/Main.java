@@ -1,9 +1,6 @@
 package com.ME.OOP2;
 
-import com.ME.OOP2.entity.Car;
-import com.ME.OOP2.entity.Member;
-import com.ME.OOP2.entity.Rental;
-import com.ME.OOP2.entity.SportsCar;
+import com.ME.OOP2.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.application.Application;
@@ -37,17 +34,19 @@ import java.time.LocalDateTime;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main extends Application {
 
+    private Label labelAddCars = new Label("Lägg till ny bil");
+    private Label labelAddMovies = new Label("Lägg till ny film");
     private Label labelResult = new Label();
     private Label labelRevenue = new Label();
     private Label labelErrorNewCar = new Label();
-    private Label labelErrorNewSCar = new Label();
+    private Label labelErrorNewMovie = new Label();
     private Label labelErrorRent = new Label();
     private Label labelErrorMember =  new Label();
     private double totalRevenue = 0;
     private String hp = "Hästkrafter";
-    private String price = "Pris";
+    private String price = "Pris/dag";
     private String lvl = "Användarnivå 1-2";
-    private String carInput = "Bilnummer";
+    private String carInput = "Bil/filmnummer";
     private String daysToRent = "Antal dagar hyra";
     private String rentalNumber = "Hyrnummer";
 
@@ -57,7 +56,9 @@ public class Main extends Application {
         labelResult.setPadding(new Insets(10,10,10,10));
         labelResult.setLineSpacing(10);
         labelErrorNewCar.setPadding(new Insets(10,10,10,10));
-        labelErrorNewSCar.setPadding(new Insets(10,10,10,10));
+        labelAddCars.setPadding(new Insets(10,10,10,10));
+        labelAddMovies.setPadding(new Insets(10,10,10,10));
+        labelErrorNewMovie.setPadding(new Insets(10,10,10,10));
         labelErrorRent.setPadding(new Insets(10,10,10,10));
         labelErrorMember.setPadding(new Insets(10,10,10,10));
 
@@ -68,6 +69,15 @@ public class Main extends Application {
         RentalService rSer = new RentalService();
         Validate val = new Validate();
 
+        //Kör Json filer och lägger in members och items
+        mReg.runJsonMembers();
+        inv.runJsonCars();
+        inv.runJsonMovie();
+
+        //Lägger in en testuthyrning
+        rSer.rentalList.add(new Rental("Adam", 2, "", "", 500, 1500, 1, 3));
+
+        //Borderpane och Tabpane
         TabPane root = new TabPane();
         BorderPane borderPaneM = new BorderPane();
 
@@ -75,11 +85,11 @@ public class Main extends Application {
 
         BorderPane borderPaneR = new BorderPane();
 
-        Tab tab1 = new Tab("Bilar");
+        Tab tab1 = new Tab("Bilar och filmer");
         tab1.setContent(borderPaneC);
         tab1.setClosable(false);
 
-        Tab tab2 = new Tab("Hyr bil");
+        Tab tab2 = new Tab("Hyr");
         tab2.setContent(borderPaneR);
         tab2.setClosable(false);
 
@@ -228,6 +238,8 @@ public class Main extends Application {
         //Tableview för bilar
         TableView<Car> cTable = new TableView<>();
         cTable.setEditable(true);
+        cTable.setMinHeight(260);
+        cTable.setPrefHeight(260);
 
         TableColumn<Car, Integer> idColumnCar = new TableColumn<>("Bilnummer");
         idColumnCar.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -241,7 +253,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Car, Double> priceColumnCar = new TableColumn<>("Pris/timme");
+        TableColumn<Car, Double> priceColumnCar = new TableColumn<>("Pris/dag");
         priceColumnCar.setCellValueFactory(new PropertyValueFactory<>("price"));
         priceColumnCar.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         priceColumnCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Car, Double>>() {
@@ -265,7 +277,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Car, String> modelColumnCar = new TableColumn<>("Modell:");
+        TableColumn<Car, String> modelColumnCar = new TableColumn<>("Modell");
         modelColumnCar.setCellValueFactory(new PropertyValueFactory<>("model"));
         modelColumnCar.setCellFactory(TextFieldTableCell.forTableColumn());
         modelColumnCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Car, String>>() {
@@ -277,7 +289,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Car, String> yearColumnCar = new TableColumn<>("Årsmodell:");
+        TableColumn<Car, String> yearColumnCar = new TableColumn<>("Årsmodell");
         yearColumnCar.setCellValueFactory(new PropertyValueFactory<>("year"));
         yearColumnCar.setCellFactory(TextFieldTableCell.forTableColumn());
         yearColumnCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Car, String>>() {
@@ -289,7 +301,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Car, String> colorColumnCar = new TableColumn<>("Färg:");
+        TableColumn<Car, String> colorColumnCar = new TableColumn<>("Färg");
         colorColumnCar.setCellValueFactory(new PropertyValueFactory<>("color"));
         colorColumnCar.setCellFactory(TextFieldTableCell.forTableColumn());
         colorColumnCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Car, String>>() {
@@ -301,7 +313,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Car, String> descriptionColumnCar = new TableColumn<>("Beskrivning:");
+        TableColumn<Car, String> descriptionColumnCar = new TableColumn<>("Beskrivning");
         descriptionColumnCar.setCellValueFactory(new PropertyValueFactory<>("description"));
         descriptionColumnCar.setCellFactory(TextFieldTableCell.forTableColumn());
         descriptionColumnCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Car, String>>() {
@@ -316,125 +328,92 @@ public class Main extends Application {
         cTable.setItems(inv.runJsonCars());
         cTable.getColumns().addAll(idColumnCar, priceColumnCar, brandColumnCar, modelColumnCar, yearColumnCar, colorColumnCar, descriptionColumnCar);
 
-        TableView<SportsCar> cTable2 = new TableView<>();
+        TableView<Movie> cTable2 = new TableView<>();
         cTable2.setEditable(true);
+        cTable2.setMinHeight(260);
+        cTable2.setPrefHeight(260);
 
-        TableColumn<SportsCar, Integer> idColumnSportsCar = new TableColumn<>("Bilnummer");
-        idColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        idColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, Integer>>() {
+        TableColumn<Movie, Integer> idColumnMovie = new TableColumn<>("Filmnummer");
+        idColumnMovie.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumnMovie.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        idColumnMovie.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Movie, Integer>>() {
 
             @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, Integer> event) {
-                SportsCar car = event.getRowValue();
-                car.setId(event.getNewValue());
+            public void handle(TableColumn.CellEditEvent<Movie, Integer> event) {
+                Movie movie = event.getRowValue();
+                movie.setId(event.getNewValue());
             }
         });
 
-        TableColumn<SportsCar, Double> priceColumnSportsCar = new TableColumn<>("Pris/timme");
-        priceColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("price"));
-        priceColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        priceColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, Double>>() {
+        TableColumn<Movie, Double> priceColumnMovie = new TableColumn<>("Pris/dag");
+        priceColumnMovie.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumnMovie.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        priceColumnMovie.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Movie, Double>>() {
 
             @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, Double> event) {
-                SportsCar car = event.getRowValue();
-                car.setPrice(event.getNewValue());
+            public void handle(TableColumn.CellEditEvent<Movie, Double> event) {
+                Movie movie = event.getRowValue();
+                movie.setPrice(event.getNewValue());
             }
         });
 
-        TableColumn<SportsCar, String> brandColumnSportsCar = new TableColumn<>("Bilmärke");
-        brandColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        brandColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn());
-        brandColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, String>>() {
+        TableColumn<Movie, String> titleColumnMovie = new TableColumn<>("Titel");
+        titleColumnMovie.setCellValueFactory(new PropertyValueFactory<>("title"));
+        titleColumnMovie.setCellFactory(TextFieldTableCell.forTableColumn());
+        titleColumnMovie.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Movie, String>>() {
 
             @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, String> event) {
-                SportsCar car = event.getRowValue();
-                car.setBrand(event.getNewValue());
+            public void handle(TableColumn.CellEditEvent<Movie, String> event) {
+                Movie movie = event.getRowValue();
+                movie.setTitle(event.getNewValue());
             }
         });
 
-        TableColumn<SportsCar, String> modelColumnSportsCar = new TableColumn<>("Modell:");
-        modelColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("model"));
-        modelColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn());
-        modelColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, String>>() {
+        TableColumn<Movie, String> genreColumnMovie = new TableColumn<>("Genre");
+        genreColumnMovie.setCellValueFactory(new PropertyValueFactory<>("genre"));
+        genreColumnMovie.setCellFactory(TextFieldTableCell.forTableColumn());
+        genreColumnMovie.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Movie, String>>() {
 
             @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, String> event) {
-                SportsCar car = event.getRowValue();
-                car.setModel(event.getNewValue());
+            public void handle(TableColumn.CellEditEvent<Movie, String> event) {
+                Movie movie = event.getRowValue();
+                movie.setGenre(event.getNewValue());
             }
         });
 
-        TableColumn<SportsCar, String> yearColumnSportsCar = new TableColumn<>("Årsmodell:");
-        yearColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("year"));
-        yearColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn());
-        yearColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, String>>() {
+        TableColumn<Movie, String> yearColumnMovie = new TableColumn<>("Produktionsår");
+        yearColumnMovie.setCellValueFactory(new PropertyValueFactory<>("year"));
+        yearColumnMovie.setCellFactory(TextFieldTableCell.forTableColumn());
+        yearColumnMovie.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Movie, String>>() {
 
             @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, String> event) {
-                SportsCar car = event.getRowValue();
-                car.setYear(event.getNewValue());
+            public void handle(TableColumn.CellEditEvent<Movie, String> event) {
+                Movie movie = event.getRowValue();
+                movie.setYear(event.getNewValue());
             }
         });
 
-        TableColumn<SportsCar, String> colorColumnSportsCar = new TableColumn<>("Färg:");
-        colorColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("color"));
-        colorColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn());
-        colorColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, String>>() {
+        TableColumn<Movie, String> descriptionColumnMovie = new TableColumn<>("Beskrivning");
+        descriptionColumnMovie.setCellValueFactory(new PropertyValueFactory<>("description"));
+        descriptionColumnMovie.setCellFactory(TextFieldTableCell.forTableColumn());
+        descriptionColumnMovie.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Movie, String>>() {
 
             @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, String> event) {
-                SportsCar car = event.getRowValue();
-                car.setColor(event.getNewValue());
+            public void handle(TableColumn.CellEditEvent<Movie, String> event) {
+                Movie movie = event.getRowValue();
+                movie.setDescription(event.getNewValue());
             }
         });
 
-        TableColumn<SportsCar, String> descriptionColumnSportsCar = new TableColumn<>("Beskrivning:");
-        descriptionColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("description"));
-        descriptionColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn());
-        descriptionColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, String>>() {
 
-            @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, String> event) {
-                SportsCar car = event.getRowValue();
-                car.setDescription(event.getNewValue());
-            }
-        });
-
-        TableColumn<SportsCar, Boolean> sportSeatsColumnSportsCar = new TableColumn<>("Sportstolar:");
-        sportSeatsColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("sportSeats"));
-        sportSeatsColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn(new BooleanStringConverter()));
-        sportSeatsColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, Boolean>>() {
-
-            @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, Boolean> event) {
-                SportsCar car = event.getRowValue();
-                car.setSportSeats(event.getNewValue());
-            }
-        });
-
-        TableColumn<SportsCar, Integer> hpColumnSportsCar = new TableColumn<>("Hästkrafter:");
-        hpColumnSportsCar.setCellValueFactory(new PropertyValueFactory<>("hp"));
-        hpColumnSportsCar.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        hpColumnSportsCar.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<SportsCar, Integer>>() {
-
-            @Override
-            public void handle(TableColumn.CellEditEvent<SportsCar, Integer> event) {
-                SportsCar car = event.getRowValue();
-                car.setHP(event.getNewValue());
-            }
-        });
-
-        cTable2.setItems(inv.runJsonSportsCars());
-        cTable2.getColumns().addAll(idColumnSportsCar, priceColumnSportsCar, brandColumnSportsCar, modelColumnSportsCar, yearColumnSportsCar, colorColumnSportsCar, hpColumnSportsCar, sportSeatsColumnSportsCar, descriptionColumnSportsCar);
+        cTable2.setItems(inv.runJsonMovie());
+        cTable2.getColumns().addAll(idColumnMovie, priceColumnMovie, titleColumnMovie, genreColumnMovie, yearColumnMovie, descriptionColumnMovie);
 
 
         //Layout för Tab1 Bilar
 
         TextField priceInput = new TextField();
-        priceInput.setPromptText("Pris");
+        priceInput.setPromptText("Pris/dag");
         priceInput.setMinWidth(200);
         TextField descriptionInput = new TextField();
         descriptionInput.setPromptText("Beskrivning");
@@ -448,55 +427,62 @@ public class Main extends Application {
         TextField colorInput = new TextField();
         colorInput.setPromptText("Färg");
 
-        //Sportbil
-        TextField sportSeatsInput = new TextField();
-        sportSeatsInput.setPromptText("Sportstolar(true eller false)");
-        sportSeatsInput.setMinWidth(200);
-        TextField hpInput = new TextField();
-        hpInput.setMinWidth(200);
-        hpInput.setPromptText("Hästkrafter");
-        //String hp = "Hästkrafter";
+        //Film
 
+        TextField mPriceInput = new TextField();
+        mPriceInput.setPromptText("Pris/dag");
+        mPriceInput.setMinWidth(200);
 
-        Button addSportsCarButton = new Button("Lägg till sportbil");
-        addSportsCarButton.setOnAction(e -> {
-                    if (descriptionInput.getText().isEmpty()) {
-                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                        labelErrorNewSCar.setTextFill(Color.RED);
-                        descriptionInput.setStyle("-fx-border-color:red;");
-                    } else if (brandInput.getText().isEmpty()) {
-                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                        labelErrorNewSCar.setTextFill(Color.RED);
-                        brandInput.setStyle("-fx-border-color:red;");
-                    } else if (modelInput.getText().isEmpty()) {
-                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                        labelErrorNewSCar.setTextFill(Color.RED);
-                        modelInput.setStyle("-fx-border-color:red;");
-                    } else if (yearInput.getText().isEmpty()) {
-                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                        labelErrorNewSCar.setTextFill(Color.RED);
-                        yearInput.setStyle("-fx-border-color:red;");
-                    } else if (colorInput.getText().isEmpty()) {
-                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                        labelErrorNewSCar.setTextFill(Color.RED);
-                        colorInput.setStyle("-fx-border-color:red;");
-                    } else if (sportSeatsInput.getText().isEmpty()) {
-                        labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                        labelErrorNewSCar.setTextFill(Color.RED);
-                        sportSeatsInput.setStyle("-fx-border-color:red;");
+        TextField titleInput = new TextField();
+        titleInput.setPromptText("Filmtitel");
+        titleInput.setMinWidth(200);
+
+        TextField genreInput = new TextField();
+        genreInput.setPromptText("Genre");
+        genreInput.setMinWidth(200);
+
+        TextField mYearInput = new TextField();
+        mYearInput.setPromptText("Produktionsår");
+        mYearInput.setMinWidth(200);
+
+        TextField mDescInput = new TextField();
+        mDescInput.setPromptText("Beskrivning");
+        mDescInput.setMinWidth(200);
+
+        Button addMovieButton = new Button("Lägg till film");
+        addMovieButton.setOnAction(e -> {
+                    if (mDescInput.getText().isEmpty()) {
+                        labelErrorNewMovie.setText("Alla fält måste fyllas i!");
+                        labelErrorNewMovie.setTextFill(Color.RED);
+                        mDescInput.setStyle("-fx-border-color:red;");
+                    } else if (mPriceInput.getText().isEmpty()) {
+                        labelErrorNewMovie.setText("Alla fält måste fyllas i!");
+                        labelErrorNewMovie.setTextFill(Color.RED);
+                        mPriceInput.setStyle("-fx-border-color:red;");
+                    } else if (titleInput.getText().isEmpty()) {
+                        labelErrorNewMovie.setText("Alla fält måste fyllas i!");
+                        labelErrorNewMovie.setTextFill(Color.RED);
+                        titleInput.setStyle("-fx-border-color:red;");
+                    } else if (genreInput.getText().isEmpty()) {
+                        labelErrorNewMovie.setText("Alla fält måste fyllas i!");
+                        labelErrorNewMovie.setTextFill(Color.RED);
+                        genreInput.setStyle("-fx-border-color:red;");
+                    } else if (mYearInput.getText().isEmpty()) {
+                        labelErrorNewMovie.setText("Alla fält måste fyllas i!");
+                        labelErrorNewMovie.setTextFill(Color.RED);
+                        mYearInput.setStyle("-fx-border-color:red;");
                     }
-                    else {
-                        labelErrorNewSCar.setText("");
-                        descriptionInput.setStyle(null);
-                        brandInput.setStyle(null);
-                        modelInput.setStyle(null);
-                        yearInput.setStyle(null);
-                        colorInput.setStyle(null);
-                        sportSeatsInput.setStyle(null);
 
-                        val.isInt(hpInput, hp);
-                        val.isDouble(priceInput, price);
-                        inv.addSportsCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, sportSeatsInput, hpInput, cTable2);
+                    else {
+                        labelErrorNewMovie.setText("");
+                        mPriceInput.setStyle(null);
+                        mDescInput.setStyle(null);
+                        titleInput.setStyle(null);
+                        genreInput.setStyle(null);
+                        mYearInput.setStyle(null);
+
+                        val.isDouble(mPriceInput, price);
+                        inv.addMovie(mPriceInput, mDescInput, titleInput, genreInput, mYearInput, cTable2);
                     }
         });
         //Slut sportbil
@@ -504,29 +490,29 @@ public class Main extends Application {
         Button addCarButton = new Button("Lägg till bil");
         addCarButton.setOnAction(e -> {
             if (descriptionInput.getText().isEmpty()) {
-                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                labelErrorNewSCar.setTextFill(Color.RED);
+                labelErrorNewCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewCar.setTextFill(Color.RED);
                 descriptionInput.setStyle("-fx-border-color:red;");
             } else if (brandInput.getText().isEmpty()) {
-                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                labelErrorNewSCar.setTextFill(Color.RED);
+                labelErrorNewCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewCar.setTextFill(Color.RED);
                 brandInput.setStyle("-fx-border-color:red;");
             } else if (modelInput.getText().isEmpty()) {
-                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                labelErrorNewSCar.setTextFill(Color.RED);
+                labelErrorNewCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewCar.setTextFill(Color.RED);
                 modelInput.setStyle("-fx-border-color:red;");
             } else if (yearInput.getText().isEmpty()) {
-                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                labelErrorNewSCar.setTextFill(Color.RED);
+                labelErrorNewCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewCar.setTextFill(Color.RED);
                 yearInput.setStyle("-fx-border-color:red;");
             } else if (colorInput.getText().isEmpty()) {
-                labelErrorNewSCar.setText("Alla fält måste fyllas i!");
-                labelErrorNewSCar.setTextFill(Color.RED);
+                labelErrorNewCar.setText("Alla fält måste fyllas i!");
+                labelErrorNewCar.setTextFill(Color.RED);
                 colorInput.setStyle("-fx-border-color:red;");
             }
 
             else {
-                labelErrorNewSCar.setText("");
+                labelErrorNewCar.setText("");
                 descriptionInput.setStyle(null);
                 brandInput.setStyle(null);
                 modelInput.setStyle(null);
@@ -550,15 +536,16 @@ public class Main extends Application {
         HBox hBoxC3 = new HBox();
         hBoxC3.setPadding(new javafx.geometry.Insets(10,10,10,10));
         hBoxC3.setSpacing(10);
-        hBoxC3.getChildren().addAll(sportSeatsInput, hpInput, addSportsCarButton, labelErrorNewSCar);
+        hBoxC3.getChildren().addAll(mPriceInput, titleInput, genreInput, mYearInput);
+
+        HBox hBoxC4 = new HBox();
+        hBoxC4.setPadding(new javafx.geometry.Insets(10,10,10,10));
+        hBoxC4.setSpacing(10);
+        hBoxC4.getChildren().addAll(mDescInput, addMovieButton, labelErrorNewMovie);
 
         VBox vBoxCars = new VBox();
         vBoxCars.setSpacing(10);
-        vBoxCars.getChildren().addAll(hBoxC, hBoxC2, hBoxC3);
-
-        VBox vBoxCarTableViews = new VBox();
-        vBoxCars.setSpacing(10);
-        vBoxCars.getChildren().addAll(cTable, cTable2);
+        vBoxCars.getChildren().addAll(labelAddCars, hBoxC, hBoxC2, labelAddMovies, hBoxC3, hBoxC4);
 
         borderPaneC.setTop(cTable);
         borderPaneC.setCenter(cTable2);
@@ -593,7 +580,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Rental, Integer> carColumnR = new TableColumn<>("Bilnummer");
+        TableColumn<Rental, Integer> carColumnR = new TableColumn<>("Bil/filmnummer");
         carColumnR.setCellValueFactory(new PropertyValueFactory<>("car"));
         carColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         carColumnR.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Rental, Integer>>() {
@@ -631,7 +618,7 @@ public class Main extends Application {
             }
         });
 
-        TableColumn<Rental, Double> priceColumnR = new TableColumn<>("Pris/timme");
+        TableColumn<Rental, Double> priceColumnR = new TableColumn<>("Pris/dag");
         priceColumnR.setCellValueFactory(new PropertyValueFactory<>("price"));
         priceColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         priceColumnR.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Rental, Double>>() {
@@ -691,10 +678,10 @@ public class Main extends Application {
         nameInputR.setPromptText("Medlemsnamn");
         nameInputR.setMinWidth(200);
         TextField carInputR = new TextField();
-        carInputR.setPromptText("Bilnummer");
+        carInputR.setPromptText("Bil/filmnummer");
         carInputR.setMinWidth(200);
 
-        Button addButtonR = new Button("Hyr bil");
+        Button addButtonR = new Button("Starta uthyrning");
         addButtonR.setOnAction(e -> {
             if (nameInputR.getText().isEmpty()) {
                 labelErrorRent.setText("Alla fält måste fyllas i!");
@@ -741,21 +728,11 @@ public class Main extends Application {
         borderPaneR.setBottom(vBoxRental);
 
 
-        Scene scene1 = new Scene(root, 1024, 768);
+        Scene scene1 = new Scene(root, 1050, 870);
         //CSS scene1.getStylesheets().add("application/stylesheet.css");
         stage.setScene(scene1);
-        stage.setTitle("Biluthyrning - Skapad av Markus Emanuelsson");
+        stage.setTitle("Biluthyrning och filmuthyrning - Skapad av Markus Emanuelsson");
         stage.show();
-
-        //Kör Json filer och lägger in members och items
-        mReg.runJsonMembers();
-        inv.getCars();
-        inv.getSportsCars();
-        inv.runJsonCars();
-        inv.runJsonSportsCars();
-
-        //Lägger in en testuthyrning
-        rSer.rentalList.add(new Rental("Markus", 2, "", "", 500, 1500, 2, 3));
 
     }
 

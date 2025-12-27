@@ -2,7 +2,7 @@ package com.ME.OOP2;
 
 import com.ME.OOP2.entity.Car;
 import com.ME.OOP2.entity.Member;
-import com.ME.OOP2.entity.SportsCar;
+import com.ME.OOP2.entity.Movie;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.collections.FXCollections;
@@ -21,26 +21,30 @@ public class Inventory {
     public Inventory() throws Exception {
     }
     //List<Car> carList = new ArrayList<>();
-    //List<SportsCar> sportsCarList = new ArrayList<>();
+    //List<Movie> movieList1 = new ArrayList<>();
     //ObservableList<Car> carList = FXCollections.observableArrayList();
     //ObservableList<SportsCar> sportsCarList = FXCollections.observableArrayList();
 
-    public ObservableList<SportsCar> runJsonSportsCars() throws Exception {
+    public ObservableList<Movie> runJsonMovie() throws Exception {
         //Json funktionalitet
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        //Spara till JSON Cars
-        //mapper.writeValue(new File("sportsCar.json"), sportsCarList);
+        /*Läggs in via movie.json istället
+        movieList1.add(new Movie(30, "Högt över Los Angeles har en grupp terrorister intagit en byggnad, tagit gisslan och förklarat krig. Men en man har lyckats undgå att bli upptäckt...en polisman som inte är i tjänst. Han är ensam...trött...och det sista hoppet för alla. New York-detektiven John McClane har just anlänt till Los Angeles för att fira jul med sin frånskilda fru. Medan McClane väntar på att hans frus kontorsfest ska sluta, tar terroristerna kontrollen över byggnaden. Medan terroristernas ledare, Hans Gruber och hans brutale bödel samlar ihop gisslan, lyckas McClane att smita undan. Med bara en tjänstepistol och sin list, startar McClane ett enmans krig mot terroristerna.", "Die hard 2", "Action", "1990"));
+        movieList1.add(new Movie(40, "Marinkårssoldaten Jake Sully kommer till planeten Pandora med ett mycket speciellt uppdrag. Han styr en avatar, en konstgjord kropp som ser exakt ut som Na'vi, planetens humanoida...", "Avatar", "Adventure/Epic", "2009"));
+        */
 
-        //Läsa in JSON Cars
+        //Spara till JSON movie.json
+        //mapper.writeValue(new File("movie.json"), movieList1);
 
-        List<SportsCar> fromFile3 = Arrays.asList(mapper.readValue(new File("sportsCar.json"), SportsCar[].class));
-        ObservableList<SportsCar> sportsCarList = FXCollections.observableArrayList(fromFile3);
-        return sportsCarList;
+        //Läsa in JSON movie.json
+        List<Movie> fromFile3 = Arrays.asList(mapper.readValue(new File("movie.json"), Movie[].class));
+        ObservableList<Movie> movieList = FXCollections.observableArrayList(fromFile3);
+        return movieList;
     }
 
-    ObservableList<SportsCar> sportsCarList = runJsonSportsCars();
+    ObservableList<Movie> movieList = runJsonMovie();
 
     public ObservableList<Car> runJsonCars() throws Exception {
         //Json funktionalitet
@@ -49,7 +53,6 @@ public class Inventory {
 
         //Spara till JSON Cars
         //mapper.writeValue(new File("car.json"), carList);
-
 
         //Läsa in JSON Cars
         List<Car> fromFile2 = Arrays.asList(mapper.readValue(new File("car.json"), Car[].class));
@@ -77,17 +80,8 @@ public class Inventory {
         return carList;
     }
 
-    public ObservableList<SportsCar> getSportsCars() {
-        /* Hämtas från sportsCar.json istället.
-        sportsCarList.add(new SportsCar(5000, "Utsökt skick, En upplevelse du aldrig glömmer.", "Ferrari", "F50", "1997", "Röd", true, 520));
-        sportsCarList.add(new SportsCar(3000, "Om du vill ha en körupplevelse bortom alla drömmar.", "Porsche", "911 GT3", "2022", "Orange", true, 510));
-        sportsCarList.add(new SportsCar(10000, "Värstingen", "Koenigsegg", "Jesko", "2025", "Vit", true, 1600));
-        */
-        return sportsCarList;
-    }
-
     public void addCar(TextField priceInput, TextField descriptionInput, TextField brandInput, TextField modelInput, TextField yearInput, TextField colorInput, TableView<Car> cTable) {
-        int price = Integer.parseInt(priceInput.getText());
+        double price = Double.parseDouble(priceInput.getText());
         String description = descriptionInput.getText();
         String brand = brandInput.getText();
         String model = modelInput.getText();
@@ -105,26 +99,20 @@ public class Inventory {
         colorInput.clear();
     }
 
-    public void addSportsCar(TextField priceInput, TextField descriptionInput, TextField brandInput, TextField modelInput, TextField yearInput, TextField colorInput, TextField sportSeatsInput, TextField hpInput, TableView<SportsCar> cTable2) {
+    public void addMovie(TextField priceInput, TextField descriptionInput, TextField titleInput, TextField genreInput, TextField yearInput, TableView<Movie> cTable2) {
         double price = Double.parseDouble(priceInput.getText());
         String description = descriptionInput.getText();
-        String brand = brandInput.getText();
-        String model = modelInput.getText();
+        String title = titleInput.getText();
+        String genre = genreInput.getText();
         String year = yearInput.getText();
-        String color = colorInput.getText();
-        Boolean sportSeats = Boolean.parseBoolean(sportSeatsInput.getText());
-        int hp = Integer.parseInt(hpInput.getText());
 
-        SportsCar sportsCar = new SportsCar(price, description, brand, model, year, color, sportSeats, hp);
-        cTable2.getItems().add(sportsCar);
+        Movie movie = new Movie(price, description, title, genre, year);
+        cTable2.getItems().add(movie);
 
         priceInput.clear();
         descriptionInput.clear();
-        brandInput.clear();
-        modelInput.clear();
+        titleInput.clear();
+        genreInput.clear();
         yearInput.clear();
-        colorInput.clear();
-        sportSeatsInput.clear();
-        hpInput.clear();
     }
 }

@@ -1,4 +1,4 @@
-package com.ME.OOP2.entity;
+/*package com.ME.OOP2.entity;
 
 import com.ME.OOP2.SequenceNumberProviderLazy;
 
@@ -42,3 +42,4 @@ public class SportsCar extends Car {
 
 
 }
+*/

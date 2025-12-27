@@ -14,7 +14,7 @@ import javafx.collections.ObservableList;
 
 public class MemberRegistry {
 
-    public MemberRegistry() throws Exception {
+    public MemberRegistry() throws Exception{
     }
 
     public ObservableList<Member> runJsonMembers() throws Exception {

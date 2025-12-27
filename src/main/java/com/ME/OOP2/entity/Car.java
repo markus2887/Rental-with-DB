@@ -15,16 +15,16 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = Car.class, name = "car"),
         @JsonSubTypes.Type(value = SportsCar.class, name = "sportscar")
 })
- */
+*/
 
 public class Car extends Item {
 
     private int id;
 
-    protected String brand;
-    protected String model;
-    protected String year;
-    protected String color;
+    private String brand;
+    private String model;
+    private String year;
+    private String color;
 
     public Car(){
     }
