@@ -1,0 +1,91 @@
+package com.ME.entity;
+import com.ME.service.RentalType;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "movies")
+public class Movie {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "price", nullable = false)
+    private double price;
+
+    @Column(name = "description", length = 1000)
+    private String description;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "genre", nullable = false)
+    private String genre;
+
+    @Column(name = "RelYear", nullable = false)
+    private String relYear;
+
+    @Column(name = "rented", nullable = false)
+    private boolean rented;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rentalType", nullable = false, length = 5)
+    private RentalType rentalType = RentalType.MOVIE;
+
+    protected Movie() {
+    }
+
+    public Movie(double price, String description, String title, String genre, String relYear) {
+        this.price = price;
+        this.description = description;
+        this.title = title;
+        this.genre = genre;
+        this.relYear = relYear;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public double getPrice() { return price; }
+
+    public void setPrice(double price) { this.price = price; }
+
+    public String getDescription() { return description; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public String getTitle() { return title; }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getRelYear() {
+        return relYear;
+    }
+
+    public void setRelYear(String relYear) {
+        this.relYear = relYear;
+    }
+
+    public boolean getRented() {
+        return rented;
+    }
+
+    public void setRented(boolean rented) {
+        this.rented = rented;
+    }
+
+    public RentalType getRentalType() {
+        return rentalType;
+    }
+}

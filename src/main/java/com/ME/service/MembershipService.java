@@ -1,6 +1,8 @@
-package com.ME.OOP2;
-import com.ME.OOP2.entity.Member;
-import com.ME.OOP2.entity.Rental;
+package com.ME.service;
+import com.ME.entity.Member;
+import com.ME.repo.MemberRepositoryImpl;
+import com.ME.util.HibernateUtil;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -8,26 +10,43 @@ import javafx.scene.control.TextField;
 
 public class MembershipService {
 
-    MemberRegistry mReg = new MemberRegistry();
+    MemberRepositoryImpl mRepo = new MemberRepositoryImpl(HibernateUtil.getSessionFactory());
+
+    private final ObservableList<Member> memberList = FXCollections.observableArrayList();
 
     public MembershipService() throws Exception {
     }
 
-    public void addButtonClicked(TextField nameInput, TextField lvlInput, TableView<Member> mTable, Label labelResult) {
+    public void loadMember() {
+        memberList.setAll(mRepo.readMember());
+    }
+
+    public ObservableList<Member> getMemberList() {
+        return memberList;
+    }
+
+    public Member addButtonClicked(TextField nameInput, TextField lvlInput, TableView<Member> mTable, Label labelResult) {
         String name = nameInput.getText();
         int lvl = Integer.parseInt(lvlInput.getText());
-        Member member = new Member(name, lvl, "");
+        Member member = new Member(name.trim(), lvl, "");
         mTable.getItems().add(member);
+        mRepo.saveMember(member);
         labelResult.setText("Medlem " + nameInput.getText() + " skapad!");
         nameInput.clear();
         lvlInput.clear();
+
+        return member;
     }
 
     public void deleteButtonClicked(TableView<Member> mTable) {
-        ObservableList<Member> memberSelected, allMembers;
-        allMembers = mTable.getItems();
-        memberSelected = mTable.getSelectionModel().getSelectedItems();
-        memberSelected.forEach(allMembers::remove);
+        Member selected = mTable.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            return;
+        }
+
+        mRepo.deleteMember(selected);
+        memberList.remove(selected);
     }
 
     public void searchMember(ObservableList<Member> membersList, String userName, Label labelResult) {
@@ -43,8 +62,8 @@ public class MembershipService {
         }
     }
 
-    public Member searchMemberR(ObservableList<Member> membersList, String userName) {
-        Member foundMember = membersList.stream()
+    public Member searchMemberR(String userName, ObservableList<Member> memberListIn) {
+        Member foundMember = memberListIn.stream()
                 .filter(m -> m.getName().equalsIgnoreCase(userName))
                 .findFirst()
                 .orElse(null);

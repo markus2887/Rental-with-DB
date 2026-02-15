@@ -1,11 +1,8 @@
-package com.ME.OOP2;
+package com.ME.util;
 
-import com.ME.OOP2.entity.Rental;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 public class Validate {
-RentalService rSer = new RentalService();
 
     public Validate() throws Exception {
     }
@@ -23,7 +20,7 @@ RentalService rSer = new RentalService();
         }
     }
 
-    public void isDouble(TextField input, String prompt) {
+    public void isNumber(TextField input, String prompt) {
         try {
             double number = Double.parseDouble(input.getText());
             input.setPromptText(prompt);

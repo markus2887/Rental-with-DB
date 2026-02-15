@@ -1,23 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  POM = Project Object Model
+  Detta är "receptet" för hur projektet byggs, testas och vilka bibliotek som används
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="
+           http://maven.apache.org/POM/4.0.0
+           https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!--
+      Modellversion för Maven POM-formatet.
+      Nästan alltid 4.0.0 i moderna Maven-projekt.
+    -->
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ME.OOP2</groupId>
-    <artifactId>ME.OOP2.Project</artifactId>
+    <!--
+      Projektets koordinater (GAV):
+      - groupId: "namespace", ofta företagsnamn eller domän baklänges
+      - artifactId: själva projektets namn
+      - version: SNAPSHOT = under utveckling
+    -->
+    <groupId>com.MarkusE</groupId>
+    <artifactId>Rental.DB.MarkusE</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <!--
+      Properties används för att samla versionsnummer och inställningar på ett ställe.
+      Fördelen är att man kan uppdatera versioner centralt.
+    -->
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+
+        <!--
+          Java-version som projektet kompileras mot.
+          release är bättre än source/target eftersom även standardbiblioteket matchas.
+        -->
+        <maven.compiler.release>25</maven.compiler.release>
+
+        <!-- Teckenkodning för källkod och resurser -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Versionsnummer för beroenden -->
+        <hibernate.version>6.6.4.Final</hibernate.version>
+        <junit.version>5.11.3</junit.version>
+        <mockito.version>5.14.2</mockito.version>
+        <slf4j.version>2.0.16</slf4j.version>
+
     </properties>
+
     <dependencies>
+
+        <!--
+          Hibernate ORM
+          Används för att visa / testa ORM-beteende (entities, Session/EntityManager)
+          Scope är compile (default) eftersom Hibernate-API används i koden.
+        -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.17.2</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
         </dependency>
+
+        <!--
+          H2-databas (in-memory)
+          Perfekt för tester eftersom ingen installation krävs.
+          Scope test: databasen används endast vid testkörning.
+        -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.3.232</version>
+        </dependency>
+
+        <!--
+          JUnit 5 (Jupiter)
+          Själva testramverket: @Test, assertions, lifecycle m.m.
+          Scope test: finns bara tillgängligt i testkod.
+        -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+          Mockito + JUnit 5 integration
+          Gör det möjligt att använda @Mock, @InjectMocks och MockitoExtension.
+        -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+          Enkel SLF4J-implementation för testkörning.
+          Gör att Hibernate-loggar syns tydligt i konsolen vid tester.
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+
+            <!--
+              Maven Surefire Plugin
+              Ansvarar för att köra tester när vi kör: mvn test
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+
+                <configuration>
+                    <!--
+                      useModulePath=false:
+                      Vi kör testerna på vanlig classpath istället för Java Module System.
+                      Detta undviker modulproblem i undervisnings- och testprojekt.
+                    -->
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
 </project>

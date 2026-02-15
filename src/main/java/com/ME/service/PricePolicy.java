@@ -1,4 +1,4 @@
-package com.ME.OOP2;
+package com.ME.service;
 
 public interface PricePolicy {
     double calcPrice(double price);

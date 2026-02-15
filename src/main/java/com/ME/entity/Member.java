@@ -1,31 +1,36 @@
-package com.ME.OOP2.entity;
+package com.ME.entity;
 
+import jakarta.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "members")
 public class Member {
-    private static int objectCount = 19;
-    private int id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name", nullable = false, length = 25)
     private String name;
+
+    @Column(name = "level", nullable = false, length = 1)
     private int level;
+
+    @Column(name = "history", nullable = true)
     private String history;
 
-    public Member() {
+    protected Member() {
     }
 
     public Member(String Name, int Level, String History) {
-        this.id = objectCount;
         this.name = Name;
         this.level = Level;
         this.history = History;
-        objectCount++;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

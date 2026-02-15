@@ -1,4 +1,4 @@
-package com.ME.OOP2;
+package com.ME.service;
 
 public class Level2PricePolicy implements PricePolicy {
     @Override
