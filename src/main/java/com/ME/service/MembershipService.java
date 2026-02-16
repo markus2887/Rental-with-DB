@@ -1,5 +1,6 @@
 package com.ME.service;
 import com.ME.entity.Member;
+import com.ME.repo.MemberRepository;
 import com.ME.repo.MemberRepositoryImpl;
 import com.ME.util.HibernateUtil;
 import javafx.collections.FXCollections;
@@ -10,15 +11,18 @@ import javafx.scene.control.TextField;
 
 public class MembershipService {
 
-    MemberRepositoryImpl mRepo = new MemberRepositoryImpl(HibernateUtil.getSessionFactory());
+    //MemberRepositoryImpl mRepo = new MemberRepositoryImpl(HibernateUtil.getSessionFactory());
 
+    private final MemberRepository memberRepository;
     private final ObservableList<Member> memberList = FXCollections.observableArrayList();
 
-    public MembershipService() throws Exception {
+    public MembershipService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
+
     public void loadMember() {
-        memberList.setAll(mRepo.readMember());
+        memberList.setAll(memberRepository.readMember());
     }
 
     public ObservableList<Member> getMemberList() {
@@ -29,8 +33,9 @@ public class MembershipService {
         String name = nameInput.getText();
         int lvl = Integer.parseInt(lvlInput.getText());
         Member member = new Member(name.trim(), lvl, "");
-        mTable.getItems().add(member);
-        mRepo.saveMember(member);
+        memberRepository.saveMember(member);
+        memberList.add(member);
+        //Läggs till automatiskt om medlemmen läggs till listan istället.. mTable.getItems().add(member);
         labelResult.setText("Medlem " + nameInput.getText() + " skapad!");
         nameInput.clear();
         lvlInput.clear();
@@ -44,8 +49,7 @@ public class MembershipService {
         if (selected == null) {
             return;
         }
-
-        mRepo.deleteMember(selected);
+        memberRepository.deleteMember(selected);
         memberList.remove(selected);
     }
 

@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RentalRepositoryImpl implements RentalRepository {
 
@@ -49,6 +50,17 @@ public class RentalRepositoryImpl implements RentalRepository {
 
             session.remove(rental);
             tx.commit();
+        }
+    }
+    /**
+     * Hämtar en Booking via dess id.
+     *
+     * - Returnerar Optional för att undvika null
+     * - Använder session.get → ger null om objektet inte finns
+     */
+    public Optional<Rental> findById(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Rental.class, id));
         }
     }
 }

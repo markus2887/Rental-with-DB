@@ -20,6 +20,7 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.geometry.Insets;
 import javafx.util.converter.LongStringConverter;
+import org.hibernate.SessionFactory;
 
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -37,7 +38,6 @@ public class Main extends Application {
     private Label labelErrorRent = new Label();
     private Label labelErrorMember =  new Label();
     private double totalRevenue = 0;
-    private String hp = "Hästkrafter";
     private String price = "Pris/dag";
     private String lvl = "Användarnivå 1-2";
     private String carInput = "Bil/film/verktygsnummer";
@@ -59,53 +59,69 @@ public class Main extends Application {
         labelErrorRent.setPadding(new Insets(10,10,10,10));
         labelErrorMember.setPadding(new Insets(10,10,10,10));
 
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+
+        //Repo
+        MemberRepository memberRepo = new MemberRepositoryImpl(sessionFactory);
+        CarRepository cRepo = new CarRepositoryImpl(sessionFactory);
+        MovieRepository movieRepo = new MovieRepositoryImpl(sessionFactory);
+        ToolRepository tRepo = new ToolRepositoryImpl(sessionFactory);
+        RentalRepository rentalRepo = new RentalRepositoryImpl(sessionFactory);
+
+        //Service
+        MembershipService membershipService = new MembershipService(memberRepo);
+        InventoryService inventoryService = new InventoryService(cRepo, movieRepo, tRepo); //ändra sen= bilar/filmer/verktyg?
+        RentalService rentalService = new RentalService(rentalRepo);
+
+        Validate val = new Validate();
+
+         /*
         MemberRepositoryImpl memberRepo = new MemberRepositoryImpl(HibernateUtil.getSessionFactory());
         CarRepositoryImpl cRepo = new CarRepositoryImpl(HibernateUtil.getSessionFactory());
         MovieRepositoryImpl movieRepo = new MovieRepositoryImpl(HibernateUtil.getSessionFactory());
         ToolRepositoryImpl tRepo = new ToolRepositoryImpl(HibernateUtil.getSessionFactory());
         RentalRepositoryImpl rentalRepo = new RentalRepositoryImpl(HibernateUtil.getSessionFactory());
-
-        MembershipService mSer = new MembershipService();
-        InventoryService inv = new InventoryService();
-        RentalService rSer = new RentalService();
-        Validate val = new Validate();
+        */
 
         // TESTDATA TILL H2 DATABASEN
         memberRepo.saveMember(new Member("Markus", 2, ""));
         memberRepo.saveMember(new Member("Adam", 1, ""));
-        Member me = new Member("Bo", 2, "");
+        Member me = new Member("TA bort vid färdigt", 2, "");
         memberRepo.saveMember(me);
-        mSer.loadMember();
+        membershipService.loadMember();
 
         cRepo.saveCar(new Car(500, "Fin bil i bra skick.", "Volvo", "V70", "2015", "Blå"));
         cRepo.saveCar(new Car(600, "Fint skick. Perfekt för affärsresan.", "Audi", "A4", "2018", "Vit"));
         cRepo.saveCar(new Car(360, "Äldre bil i okej skick.", "Volvo", "V40", "2002", "Grå"));
         cRepo.saveCar(new Car(650, "Fin lyxig bil.", "BMW", "320", "2022", "Blå"));
-        inv.loadCar();
+        inventoryService.loadCar();
 
         movieRepo.saveMovie(new Movie(30, "Högt över Los Angeles har en grupp terrorister intagit en byggnad, tagit gisslan och förklarat krig. Men en man har lyckats undgå att bli upptäckt...en polisman som inte är i tjänst. Han är ensam...trött...och det sista hoppet för alla. New York-detektiven John McClane har just anlänt till Los Angeles för att fira jul med sin frånskilda fru. Medan McClane väntar på att hans frus kontorsfest ska sluta, tar terroristerna kontrollen över byggnaden. Medan terroristernas ledare, Hans Gruber och hans brutale bödel samlar ihop gisslan, lyckas McClane att smita undan. Med bara en tjänstepistol och sin list, startar McClane ett enmans krig mot terroristerna.", "Die hard 2", "Action", "1990"));
         movieRepo.saveMovie(new Movie(40, "Marinkårssoldaten Jake Sully kommer till planeten Pandora med ett mycket speciellt uppdrag. Han styr en avatar, en konstgjord kropp som ser exakt ut som Na'vi, planetens humanoida...", "Avatar", "Adventure/Epic", "2009"));
-        inv.loadMovie();
+        inventoryService.loadMovie();
 
         tRepo.saveTool(new Tool(150, "Lättanvänd skruvdragare med batteritid på 5 timmar.", "Skruvdragare", "2022", "Ja"));
         tRepo.saveTool(new Tool(300, "Avancerad häcksax med batteritid på 3 timmar.", "Häcksax", "2025", "Ja"));
-        inv.loadTool();
+        inventoryService.loadTool();
+
+        //rentalRepo.saveRental(new Rental(me, 1L, "2026-02-02 16:02", "", 500, 0, 2, 0, RentalType.CAR));
+        //rentalRepo.loadRental();
 
 
-        rentalRepo.saveRental(new Rental(me, 1L, "2026-02-02 16:02", "", 500, 0, 2, 0, RentalType.CAR));
-        rSer.loadRental();
-
-
-        //Borderpane och Tabpane
+        //Borderpanes och Tabpanes
         TabPane root = new TabPane();
         BorderPane borderPaneM = new BorderPane();
-
         BorderPane borderPaneC = new BorderPane();
-
         BorderPane borderPaneR = new BorderPane();
+        ScrollPane scroll1 = new ScrollPane();
+        scroll1.setContent(borderPaneC);
+        ScrollPane scroll2 = new ScrollPane();
+        scroll2.setContent(borderPaneR);
+        ScrollPane scroll3 = new ScrollPane();
+        scroll3.setContent(borderPaneM);
 
         Tab tab1 = new Tab("Bilar, filmer och verktyg");
-        tab1.setContent(borderPaneC);
+        tab1.setContent(scroll1);
         tab1.setClosable(false);
 
         Tab tab2 = new Tab("Hyr");
@@ -117,11 +133,10 @@ public class Main extends Application {
         tab3.setClosable(false);
 
         Tab tab4 = new Tab("Intäkter");
-
         //labelRevenue.setPadding(new Insets(10));
         Button getRevenueButton = new Button("Visa totala intäkter");
         getRevenueButton.setOnAction(e -> {
-            rSer.showRevenue(totalRevenue, labelRevenue);
+            rentalService.showRevenue(totalRevenue, labelRevenue);
         });
 
         VBox vBoxRevenue = new VBox();
@@ -176,7 +191,7 @@ public class Main extends Application {
             memberRepo.updateMember(m);
         });
 
-        mTable.setItems(mSer.getMemberList());
+        mTable.setItems(membershipService.getMemberList());
         mTable.getColumns().addAll(idColumn, nameColumn, lvlColumn, historyColumn);
 
         //TextField för att söka medlem
@@ -208,15 +223,15 @@ public class Main extends Application {
                 //labelErrorMember.setStyle(null);
                 nameInput.setStyle(null);
                 val.isInt(lvlInput, lvl);
-                mSer.addButtonClicked(nameInput, lvlInput, mTable, labelResult);
+                membershipService.addButtonClicked(nameInput, lvlInput, mTable, labelResult);
             }
         });
 
         Button deleteButton = new Button("Ta bort");
-        deleteButton.setOnAction(e -> mSer.deleteButtonClicked(mTable));
+        deleteButton.setOnAction(e -> membershipService.deleteButtonClicked(mTable));
 
         Button searchButton = new Button("Sök medlem");
-        searchButton.setOnAction(e -> mSer.searchMember(mSer.getMemberList(), searchName.getText(), labelResult));
+        searchButton.setOnAction(e -> membershipService.searchMember(membershipService.getMemberList(), searchName.getText(), labelResult));
 
         //Layout Members, Hbox inuti en Vbox i botten av borderpane. Center visar tabell.
         HBox hBox = new HBox();
@@ -300,7 +315,7 @@ public class Main extends Application {
         });
 
         cTable.getColumns().addAll(idColumnCar, priceColumnCar, brandColumnCar, modelColumnCar, yearColumnCar, colorColumnCar, descriptionColumnCar);
-        cTable.setItems(inv.getCarList());
+        cTable.setItems(inventoryService.getCarList());
 
 
         //Tableview för Movie
@@ -358,7 +373,7 @@ public class Main extends Application {
         });
 
         movieTable.getColumns().addAll(idColumnMovie, priceColumnMovie, titleColumnMovie, genreColumnMovie, relYearColumnMovie, descriptionColumnMovie);
-        movieTable.setItems(inv.getMovieList());
+        movieTable.setItems(inventoryService.getMovieList());
 
         //Tableview för Tool
         TableView<Tool> toolTable = new TableView<>();
@@ -415,7 +430,7 @@ public class Main extends Application {
         });
 
         toolTable.getColumns().addAll(idColumnTool, priceColumnTool, nameColumnTool, fromYearColumnTool, cordlessColumnTool, descriptionColumnTool);
-        toolTable.setItems(inv.getToolList());
+        toolTable.setItems(inventoryService.getToolList());
 
         //Lägg till bilar
 
@@ -472,7 +487,7 @@ public class Main extends Application {
                 yearInput.setStyle(null);
                 colorInput.setStyle(null);
                 val.isNumber(priceInput, price);
-                inv.addCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, cTable);
+                inventoryService.addCar(priceInput, descriptionInput, brandInput, modelInput, yearInput, colorInput, cTable);
             }
         });
 
@@ -531,7 +546,7 @@ public class Main extends Application {
                 mYearInput.setStyle(null);
 
                 val.isNumber(mPriceInput, price);
-                inv.addMovie(mPriceInput, mDescInput, titleInput, genreInput, mYearInput, movieTable);
+                inventoryService.addMovie(mPriceInput, mDescInput, titleInput, genreInput, mYearInput, movieTable);
             }
         });
 
@@ -590,7 +605,7 @@ public class Main extends Application {
                 tCordlessInput.setStyle(null);
 
                 val.isNumber(tPriceInput, price);
-                inv.addTool(tPriceInput, tDescInput, tNameInput, tYearInput, tCordlessInput, toolTable);
+                inventoryService.addTool(tPriceInput, tDescInput, tNameInput, tYearInput, tCordlessInput, toolTable);
             }
         });
 
@@ -724,7 +739,7 @@ public class Main extends Application {
 
         TableView<Rental> rTable = new TableView<>();
         rTable.setEditable(true);
-        rTable.setItems(rSer.getRentalList());
+        rTable.setItems(rentalService.getRentalList());
         rTable.getColumns().addAll(idColumnR, memberColumnR, objColumnR, startColumnR, endColumnR, priceColumnR, totalPriceColumnR, lvlColumnR, daysToRentColumnR);
 
 
@@ -747,7 +762,7 @@ public class Main extends Application {
                     labelErrorRent.setText("");
                     labelErrorRent.setStyle(null);
                     val.isInt(objInputR, carInput);
-                    rSer.rentButtonClicked(nameInputR, objInputR, rentalTypeCombo, rTable, mSer.getMemberList(), inv.getCarList(), inv.getMovieList(), inv.getToolList(), labelErrorRent);
+                    rentalService.rentButtonClicked(nameInputR, objInputR, rentalTypeCombo, rTable, membershipService.getMemberList(), inventoryService.getCarList(), inventoryService.getMovieList(), inventoryService.getToolList(), labelErrorRent);
                 }
 
         });
@@ -770,7 +785,7 @@ public class Main extends Application {
 
             val.isInt(rNumberInput, rentalNumber);
             val.isInt(daysInput, daysToRent);
-            rSer.updateRental(rNumberInput, daysInput, rTable);
+            rentalService.updateRental(rNumberInput, daysInput, rTable);
             rNumberInput.clear();
             daysInput.clear();
         });
@@ -793,6 +808,11 @@ public class Main extends Application {
         stage.setTitle("Uthyrning - Skapad av Markus Emanuelsson");
         stage.show();
 
+    }
+
+    @Override
+    public void stop() {
+        HibernateUtil.shutdown();
     }
 
     public static void main(String[] args) {

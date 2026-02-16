@@ -1,11 +1,13 @@
 package com.ME.repo;
 import com.ME.entity.Member;
+import com.ME.entity.Rental;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MemberRepositoryImpl implements MemberRepository {
     /**
@@ -47,12 +49,6 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     }
 
-    /*@Override
-    public Member findMember() {
-        Member m =
-        return m;
-    }*/
-
     @Override
     public void saveMember(Member member) {
 
@@ -86,6 +82,23 @@ public class MemberRepositoryImpl implements MemberRepository {
 
             session.remove(member);
             tx.commit();
+        }
+    }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Member.class, id));
+        }
+    }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createNativeQuery(
+                            "SELECT * FROM members WHERE name = :name", Member.class)
+                    .setParameter("name", name)
+                    .uniqueResultOptional();
         }
     }
 }

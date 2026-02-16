@@ -5,10 +5,7 @@ import com.ME.entity.Member;
 import com.ME.entity.Movie;
 import com.ME.entity.Tool;
 import com.ME.exception.CarNotFoundException;
-import com.ME.repo.CarRepositoryImpl;
-import com.ME.repo.MovieRepositoryImpl;
-import com.ME.repo.ToolRepository;
-import com.ME.repo.ToolRepositoryImpl;
+import com.ME.repo.*;
 import com.ME.util.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,11 +15,24 @@ import javafx.scene.control.TextField;
 
 public class InventoryService {
 
+private final CarRepository carRepository;
+private final MovieRepository movieRepository;
+private final ToolRepository toolRepository;
+
+public InventoryService (CarRepository carRepository, MovieRepository movieRepository, ToolRepository toolRepository) {
+    this.carRepository = carRepository;
+    this.movieRepository = movieRepository;
+    this.toolRepository = toolRepository;
+}
+
+/* Kod innan ändring
     CarRepositoryImpl cRepo = new CarRepositoryImpl(HibernateUtil.getSessionFactory());
     MovieRepositoryImpl movieRepo = new MovieRepositoryImpl(HibernateUtil.getSessionFactory());
     ToolRepositoryImpl tRepo = new ToolRepositoryImpl(HibernateUtil.getSessionFactory());
+*/
 
-    ObservableList<Car> carList = FXCollections.observableArrayList();
+
+    private final ObservableList<Car> carList = FXCollections.observableArrayList();
     private final ObservableList<Movie> movieList = FXCollections.observableArrayList();
     private final ObservableList<Tool> toolList = FXCollections.observableArrayList();
 
@@ -39,15 +49,15 @@ public class InventoryService {
     }
 
     public void loadCar() {
-        carList.setAll(cRepo.readCar());
+        carList.setAll(carRepository.readCar());
     }
 
     public void loadMovie() {
-        movieList.setAll(movieRepo.readMovie());
+        movieList.setAll(movieRepository.readMovie());
     }
 
     public void loadTool() {
-        toolList.setAll(tRepo.readTool());
+        toolList.setAll(toolRepository.readTool());
     }
 
     public void addCar(TextField priceInput, TextField descriptionInput, TextField brandInput, TextField modelInput, TextField yearInput, TextField colorInput, TableView<Car> cTable) {
@@ -59,8 +69,8 @@ public class InventoryService {
         String color = colorInput.getText();
 
         Car car = new Car(price, description, brand, model, releaseYear, color);
-        cRepo.saveCar(car);
-        cTable.getItems().add(car);
+        carRepository.saveCar(car);
+        carList.add(car);
 
         priceInput.clear();
         descriptionInput.clear();
@@ -78,8 +88,8 @@ public class InventoryService {
         String year = yearInput.getText();
 
         Movie movie = new Movie(price, description, title, genre, year);
-        movieRepo.saveMovie(movie);
-        mTable.getItems().add(movie);
+        movieRepository.saveMovie(movie);
+        movieList.add(movie);
 
         priceInput.clear();
         descriptionInput.clear();
@@ -96,22 +106,14 @@ public class InventoryService {
         String cordless = cordlessInput.getText();
 
         Tool tool = new Tool(price, description, name, year, cordless);
-        tRepo.saveTool(tool);
-        tTable.getItems().add(tool);
+        toolRepository.saveTool(tool);
+        toolList.add(tool);
 
         priceInput.clear();
         descriptionInput.clear();
         nameInput.clear();
         yearInput.clear();
         cordlessInput.clear();
-    }
-
-    public void test() {
-        System.out.println("Söker id: 2");
-
-        carList.forEach(c ->
-                System.out.println("Car i lista: " + c.getId())
-        );
     }
 
     public Car searchCar(Long carId, ObservableList<Car> carListIn) throws CarNotFoundException {

@@ -1,9 +1,11 @@
 package com.ME.repo;
 
 import com.ME.entity.Member;
+import com.ME.entity.Rental;
 import javafx.collections.ObservableList;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * CustomerRepository
@@ -44,4 +46,6 @@ public interface MemberRepository {
     //Member findMember();
     void updateMember(Member member);
     void deleteMember(Member member);
+    Optional<Member> findById(long id);
+    Optional<Member> findByName(String name);
 }
