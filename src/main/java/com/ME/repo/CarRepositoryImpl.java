@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CarRepositoryImpl implements CarRepository {
 
@@ -53,6 +54,11 @@ public class CarRepositoryImpl implements CarRepository {
             tx.commit();
         }
     }
-
+    @Override
+    public Optional<Car> findById(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Car.class, id));
+        }
+    }
 
 }

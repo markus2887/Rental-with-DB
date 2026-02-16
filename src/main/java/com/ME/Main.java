@@ -62,16 +62,16 @@ public class Main extends Application {
         SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
         //Repo
+        RentalRepository rentalRepo = new RentalRepositoryImpl(sessionFactory);
         MemberRepository memberRepo = new MemberRepositoryImpl(sessionFactory);
         CarRepository cRepo = new CarRepositoryImpl(sessionFactory);
         MovieRepository movieRepo = new MovieRepositoryImpl(sessionFactory);
         ToolRepository tRepo = new ToolRepositoryImpl(sessionFactory);
-        RentalRepository rentalRepo = new RentalRepositoryImpl(sessionFactory);
 
         //Service
         MembershipService membershipService = new MembershipService(memberRepo);
         InventoryService inventoryService = new InventoryService(cRepo, movieRepo, tRepo); //ändra sen= bilar/filmer/verktyg?
-        RentalService rentalService = new RentalService(rentalRepo);
+        RentalService rentalService = new RentalService(rentalRepo, memberRepo, cRepo, movieRepo, tRepo);
 
         Validate val = new Validate();
 
@@ -803,7 +803,7 @@ public class Main extends Application {
         borderPaneR.setBottom(vBoxRental);
 
 
-        Scene scene1 = new Scene(root, 1250, 1000);
+        Scene scene1 = new Scene(root, 1250, 800);
         stage.setScene(scene1);
         stage.setTitle("Uthyrning - Skapad av Markus Emanuelsson");
         stage.show();

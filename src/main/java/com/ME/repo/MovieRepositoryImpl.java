@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MovieRepositoryImpl implements MovieRepository {
     private final SessionFactory sessionFactory;
@@ -48,6 +49,12 @@ public class MovieRepositoryImpl implements MovieRepository {
 
             session.remove(movie);
             tx.commit();
+        }
+    }
+    @Override
+    public Optional<Movie> findById(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Movie.class, id));
         }
     }
 }

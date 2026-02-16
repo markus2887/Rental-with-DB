@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ToolRepositoryImpl implements ToolRepository {
 
@@ -49,6 +50,12 @@ public class ToolRepositoryImpl implements ToolRepository {
 
             session.remove(tool);
             tx.commit();
+        }
+    }
+    @Override
+    public Optional<Tool> findById(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Tool.class, id));
         }
     }
 }
