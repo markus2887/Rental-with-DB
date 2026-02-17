@@ -10,6 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import org.hibernate.SessionFactory;
 
 import java.time.LocalDateTime;
@@ -62,12 +63,11 @@ public class RentalService {
         try {
         RentalType typeChoice = rentalType.getValue();
         String name = nameInputR.getText();
+        time = LocalDateTime.now().toString();
         Long rObject = Long.parseLong(objInputR.getText());
 
         Member foundMember = memberRepository.findByName(name)
                 .orElseThrow(() -> new MemberNotFoundException("Medlemmen " +name +" finns inte."));
-
-        time = LocalDateTime.now().toString();
 
         Optional<Rental> foundRental = rentalRepository.findByRentalObjectId(rObject, typeChoice.name());
         if (foundRental.isPresent()) {
@@ -82,7 +82,6 @@ public class RentalService {
                 Rental newRental = new Rental(foundMember, rObject, time, "", foundCar.getPrice(), 0, foundMember.getLevel(), 0, RentalType.CAR);
                 rentalRepository.saveRental(newRental);
                 rentalList.add(newRental);
-
                 nameInputR.clear();
                 objInputR.clear();
 
@@ -112,6 +111,7 @@ public class RentalService {
         }
         } catch (MemberNotFoundException | CarNotFoundException | MovieNotFoundException | ToolNotFoundException | ItemAlreadyHiredException e) {
             labelErrorRent.setText(e.getMessage());
+            labelErrorRent.setTextFill(Color.RED);
         }
     }
 

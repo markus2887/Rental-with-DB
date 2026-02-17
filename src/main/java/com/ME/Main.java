@@ -24,9 +24,6 @@ import org.hibernate.SessionFactory;
 
 import java.util.Optional;
 
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main extends Application {
 
     private Label labelAddCars = new Label("Lägg till ny bil");
@@ -86,28 +83,33 @@ public class Main extends Application {
         */
 
         // TESTDATA TILL H2 DATABASEN
+        //Lägg till 3 medlemmar
         memberRepo.saveMember(new Member("Markus", 2, ""));
-        memberRepo.saveMember(new Member("Adam", 1, ""));
-        Member me = new Member("TA bort vid färdigt", 2, "");
-        memberRepo.saveMember(me);
+        memberRepo.saveMember(new Member("Bo", 1, ""));
+        memberRepo.saveMember(new Member("Eva", 1, ""));
         membershipService.loadMember();
 
+        //Lägg till 4 bilar
         cRepo.saveCar(new Car(500, "Fin bil i bra skick.", "Volvo", "V70", "2015", "Blå"));
         cRepo.saveCar(new Car(600, "Fint skick. Perfekt för affärsresan.", "Audi", "A4", "2018", "Vit"));
         cRepo.saveCar(new Car(360, "Äldre bil i okej skick.", "Volvo", "V40", "2002", "Grå"));
         cRepo.saveCar(new Car(650, "Fin lyxig bil.", "BMW", "320", "2022", "Blå"));
         inventoryService.loadCar();
 
+        //Lägg till 2 filmer
         movieRepo.saveMovie(new Movie(30, "Högt över Los Angeles har en grupp terrorister intagit en byggnad, tagit gisslan och förklarat krig. Men en man har lyckats undgå att bli upptäckt...en polisman som inte är i tjänst. Han är ensam...trött...och det sista hoppet för alla. New York-detektiven John McClane har just anlänt till Los Angeles för att fira jul med sin frånskilda fru. Medan McClane väntar på att hans frus kontorsfest ska sluta, tar terroristerna kontrollen över byggnaden. Medan terroristernas ledare, Hans Gruber och hans brutale bödel samlar ihop gisslan, lyckas McClane att smita undan. Med bara en tjänstepistol och sin list, startar McClane ett enmans krig mot terroristerna.", "Die hard 2", "Action", "1990"));
         movieRepo.saveMovie(new Movie(40, "Marinkårssoldaten Jake Sully kommer till planeten Pandora med ett mycket speciellt uppdrag. Han styr en avatar, en konstgjord kropp som ser exakt ut som Na'vi, planetens humanoida...", "Avatar", "Adventure/Epic", "2009"));
         inventoryService.loadMovie();
 
+        //Lägg till 2 verktyg
         tRepo.saveTool(new Tool(150, "Lättanvänd skruvdragare med batteritid på 5 timmar.", "Skruvdragare", "2022", "Ja"));
         tRepo.saveTool(new Tool(300, "Avancerad häcksax med batteritid på 3 timmar.", "Häcksax", "2025", "Ja"));
         inventoryService.loadTool();
 
-        //rentalRepo.saveRental(new Rental(me, 1L, "2026-02-02 16:02", "", 500, 0, 2, 0, RentalType.CAR));
-        //rentalRepo.loadRental();
+        //Lägg till en uthyrning
+        Optional<Member> me = memberRepo.findByName("Markus");
+        rentalRepo.saveRental(new Rental(me.get(), 1L, "2026-02-02 16:02", "", 500, 0, 2, 0, RentalType.CAR));
+        rentalService.loadRental();
 
 
         //Borderpanes och Tabpanes
@@ -674,6 +676,9 @@ public class Main extends Application {
         //nameColumnR.setMinWidth(200);
         memberColumnR.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getMember().getId()));
 
+        TableColumn<Rental, RentalType> rTypeColumnR = new TableColumn<>("Uthyrningstyp");
+        rTypeColumnR.setCellValueFactory(new PropertyValueFactory<>("rentalType"));
+
         TableColumn<Rental, Long> objColumnR = new TableColumn<>("Objektnummer");
         objColumnR.setCellValueFactory(new PropertyValueFactory<>("rentalObjectId"));
         objColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new LongStringConverter()));
@@ -752,7 +757,7 @@ public class Main extends Application {
         TableView<Rental> rTable = new TableView<>();
         rTable.setEditable(true);
         rTable.setItems(rentalService.getRentalList());
-        rTable.getColumns().addAll(idColumnR, memberColumnR, objColumnR, startColumnR, endColumnR, priceColumnR, totalPriceColumnR, lvlColumnR, daysToRentColumnR);
+        rTable.getColumns().addAll(idColumnR, memberColumnR, rTypeColumnR, objColumnR, startColumnR, endColumnR, priceColumnR, totalPriceColumnR, lvlColumnR, daysToRentColumnR);
 
 
         //Layout för Tab2 Uthyrning

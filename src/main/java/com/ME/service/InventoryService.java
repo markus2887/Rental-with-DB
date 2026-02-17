@@ -115,29 +115,4 @@ public InventoryService (CarRepository carRepository, MovieRepository movieRepos
         yearInput.clear();
         cordlessInput.clear();
     }
-
-    public Car searchCar(Long carId, ObservableList<Car> carListIn) throws CarNotFoundException {
-        Car carFound = carListIn.stream()
-                .filter(c -> c.getId().equals(carId))
-                .findFirst()
-                .orElseThrow(() ->
-                        new CarNotFoundException("Bil med ID " + carId + " finns inte"));
-        return carFound;
-    }
-
-    public Movie searchMovie(Long movie, ObservableList<Movie> movieListIn) {
-        Movie foundMovie = movieListIn.stream()
-                .filter(m -> m.getId() == movie)
-                .findFirst()
-                .orElse(null);
-        return foundMovie;
-    }
-
-    public Tool searchTool(Long tool, ObservableList<Tool> toolListIn) {
-        Tool foundTool = toolListIn.stream()
-                .filter(t -> t.getId() == tool)
-                .findFirst()
-                .orElse(null);
-        return foundTool;
-    }
 }
