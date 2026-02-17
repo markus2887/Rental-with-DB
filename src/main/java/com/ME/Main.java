@@ -22,6 +22,8 @@ import javafx.geometry.Insets;
 import javafx.util.converter.LongStringConverter;
 import org.hibernate.SessionFactory;
 
+import java.util.Optional;
+
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -231,7 +233,17 @@ public class Main extends Application {
         deleteButton.setOnAction(e -> membershipService.deleteButtonClicked(mTable));
 
         Button searchButton = new Button("Sök medlem");
-        searchButton.setOnAction(e -> membershipService.searchMember(membershipService.getMemberList(), searchName.getText(), labelResult));
+
+        searchButton.setOnAction(e -> {
+            Optional<Member> found = memberRepo.findByName(searchName.getText());
+
+            if (found.isPresent()) {
+                labelResult.setText("Hittade medlem med namn " + found.get().getName());
+            } else {
+                labelResult.setText("Ingen medlem hittades");
+            }
+        });
+
 
         //Layout Members, Hbox inuti en Vbox i botten av borderpane. Center visar tabell.
         HBox hBox = new HBox();

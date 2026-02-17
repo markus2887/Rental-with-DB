@@ -1,8 +1,7 @@
 package com.ME.service;
 
 import com.ME.entity.*;
-import com.ME.exception.CarNotFoundException;
-import com.ME.exception.MemberNotFoundException;
+import com.ME.exception.*;
 import com.ME.repo.*;
 import com.ME.util.HibernateUtil;
 import javafx.collections.FXCollections;
@@ -65,39 +64,24 @@ public class RentalService {
         String name = nameInputR.getText();
         Long rObject = Long.parseLong(objInputR.getText());
 
-        /* Gamla metoderna
-        Member foundMember = mSer.searchMemberR(name, memberList);
-        Car foundCar = inv.searchCar(rObject, carList);
-        Movie foundMovie = inv.searchMovie(rObject, movieList);
-        Tool foundTool = inv.searchTool(rObject, toolList);
-        */
-
-            Member foundMember = memberRepository.findByName(name)
-                    .orElseThrow(() -> new MemberNotFoundException(
-                    "Medlemmen hittades inte tyvärr med namn: " + name
-            ));
-
-            /*
-            if (foundMember.isPresent()) {
-                throw new MemberNotFoundException("Medlem med namn " + name + " finns inte");
-            }
-            Optional<Car> foundCar = carRepository.findById(rObject);
-            Optional<Movie> foundMovie = movieRepository.findById(rObject);
-            Optional<Tool> foundTool = toolRepository.findById(rObject);
-             */
+        Member foundMember = memberRepository.findByName(name)
+                .orElseThrow(() -> new MemberNotFoundException("Medlemmen " +name +" finns inte."));
 
         time = LocalDateTime.now().toString();
+
+        Optional<Rental> foundRental = rentalRepository.findByRentalObjectId(rObject, typeChoice.name());
+        if (foundRental.isPresent()) {
+            throw new ItemAlreadyHiredException("Tyvärr är nummer " + rObject + " redan uthyrd! Beklagar.");
+        }
 
         switch (typeChoice) {
             case CAR -> {
                 Car foundCar = carRepository.findById(rObject)
-                        .orElseThrow(() -> new CarNotFoundException(
-                                "Bil nummer " +rObject + " Hittades inte"
-                        ));
+                        .orElseThrow(() -> new CarNotFoundException("Bil nummer " +rObject + " finns inte. Försök med en annan bil."));
 
                 Rental newRental = new Rental(foundMember, rObject, time, "", foundCar.getPrice(), 0, foundMember.getLevel(), 0, RentalType.CAR);
                 rentalRepository.saveRental(newRental);
-                rTable.getItems().add(newRental);
+                rentalList.add(newRental);
 
                 nameInputR.clear();
                 objInputR.clear();
@@ -105,24 +89,28 @@ public class RentalService {
             }
 
             case MOVIE -> {
-                Rental newRental = new Rental(foundMember, rObject, time, "", foundMovie.get().getPrice(), 0, foundMember.getLevel(), 0, RentalType.MOVIE);
+                Movie foundMovie = movieRepository.findById(rObject)
+                        .orElseThrow(() -> new MovieNotFoundException("Film nummer " +rObject + " finns inte. Försök med en annan film."));
+
+                Rental newRental = new Rental(foundMember, rObject, time, "", foundMovie.getPrice(), 0, foundMember.getLevel(), 0, RentalType.MOVIE);
                 rentalRepository.saveRental(newRental);
-                rTable.getItems().add(newRental);
+                rentalList.add(newRental);
 
                 nameInputR.clear();
                 objInputR.clear();
             }
 
             case TOOL -> {
-                Rental newRental = new Rental(foundMember, rObject, time, "", foundTool.get().getPrice(), 0, foundMember.getLevel(), 0, RentalType.TOOL);
+                Tool foundTool = toolRepository.findById(rObject)
+                        .orElseThrow(() -> new ToolNotFoundException("Verktyg nummer " +rObject + " finns inte. Försök med ett annat verktyg."));
+                Rental newRental = new Rental(foundMember, rObject, time, "", foundTool.getPrice(), 0, foundMember.getLevel(), 0, RentalType.TOOL);
                 rentalRepository.saveRental(newRental);
-                rTable.getItems().add(newRental);
                 rentalList.add(newRental);
                 nameInputR.clear();
                 objInputR.clear();
             }
         }
-        } catch (MemberNotFoundException | CarNotFoundException e) {
+        } catch (MemberNotFoundException | CarNotFoundException | MovieNotFoundException | ToolNotFoundException | ItemAlreadyHiredException e) {
             labelErrorRent.setText(e.getMessage());
         }
     }

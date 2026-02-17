@@ -96,7 +96,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Optional<Member> findByName(String name) {
         try (Session session = sessionFactory.openSession()) {
             return session.createNativeQuery(
-                            "SELECT * FROM members WHERE name = :name", Member.class)
+                    "SELECT * FROM members WHERE LOWER(name) = LOWER(:name)", Member.class)
                     .setParameter("name", name)
                     .uniqueResultOptional();
         }

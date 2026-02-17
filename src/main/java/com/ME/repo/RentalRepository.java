@@ -11,4 +11,5 @@ public interface RentalRepository {
     void updateRental(Rental rental);
     void deleteRental(Rental rental);
     Optional<Rental> findById(long id);
+    Optional<Rental> findByRentalObjectId(long id, String rentalType);
 }

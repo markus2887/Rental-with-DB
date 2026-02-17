@@ -26,9 +26,6 @@ public class Tool {
     @Column(name = "cordless", length = 3)
     private String cordless;
 
-    @Column(name = "rented", nullable = false)
-    private boolean rented;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "rentalType", nullable = false, length = 5)
     private RentalType rentalType = RentalType.TOOL;
@@ -86,14 +83,6 @@ public class Tool {
 
     public void setCordless(String cordless) {
         this.cordless = cordless;
-    }
-
-    public boolean getRented() {
-        return rented;
-    }
-
-    public void setRented(boolean rented) {
-        this.rented = rented;
     }
 
     public RentalType getRentalType() {

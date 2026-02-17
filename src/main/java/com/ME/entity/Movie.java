@@ -25,9 +25,6 @@ public class Movie {
     @Column(name = "RelYear", nullable = false)
     private String relYear;
 
-    @Column(name = "rented", nullable = false)
-    private boolean rented;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "rentalType", nullable = false, length = 5)
     private RentalType rentalType = RentalType.MOVIE;
@@ -75,14 +72,6 @@ public class Movie {
 
     public void setRelYear(String relYear) {
         this.relYear = relYear;
-    }
-
-    public boolean getRented() {
-        return rented;
-    }
-
-    public void setRented(boolean rented) {
-        this.rented = rented;
     }
 
     public RentalType getRentalType() {

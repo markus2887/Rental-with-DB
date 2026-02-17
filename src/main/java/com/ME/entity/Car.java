@@ -29,9 +29,6 @@ public class Car {
     @Column(name = "color", nullable = false)
     private String color;
 
-    @Column(name = "rented", nullable = false)
-    private boolean rented;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "rentalType", nullable = false, length = 5)
     private RentalType rentalType = RentalType.CAR;
@@ -94,14 +91,6 @@ public class Car {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public boolean getRented() {
-        return rented;
-    }
-
-    public void setRented(boolean rented) {
-        this.rented = rented;
     }
 
     public RentalType getRentalType() {

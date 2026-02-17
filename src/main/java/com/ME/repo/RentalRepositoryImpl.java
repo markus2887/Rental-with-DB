@@ -63,4 +63,14 @@ public class RentalRepositoryImpl implements RentalRepository {
             return Optional.ofNullable(session.get(Rental.class, id));
         }
     }
+    public Optional<Rental> findByRentalObjectId(long objectId, String rentalType) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createNativeQuery(
+                            "SELECT * FROM rentals WHERE rentalObjectId = :id AND rentalType = :type AND endTime = ''",
+                            Rental.class)
+                    .setParameter("id", objectId)
+                    .setParameter("type", rentalType)
+                    .uniqueResultOptional();
+        }
+    }
 }
