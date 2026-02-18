@@ -41,12 +41,6 @@ public class RentalService {
     MemberRepository memberRepo = new MemberRepositoryImpl(sessionFactory);
     MembershipService mSer = new MembershipService(memberRepo);
 
-
-
-    //MembershipService mSer = new MembershipService();
-    //MemberRepository mRepo = new MemberRepositoryImpl(HibernateUtil.getSessionFactory());
-    //RentalRepositoryImpl rentalRepo = new RentalRepositoryImpl(HibernateUtil.getSessionFactory());
-    //InventoryService inv = new InventoryService();
     PricePolicy NormalPriceP = new NormalPricePolicy();
     PricePolicy Level2PriceP = new Level2PricePolicy();
 
@@ -115,43 +109,31 @@ public class RentalService {
         }
     }
 
-    public Optional<Rental> findRentalById(Long id) {
-        return rentalList.stream()
-                .filter(m -> m.getId() == id)
-                .findFirst();
-    }
-
-    public boolean updateRental(TextField id, TextField daysToRent, TableView<Rental> rTable) {
+    public boolean updateRental(TextField id, TextField daysToRent) {
         Long idR = Long.parseLong(id.getText());
         int days = Integer.parseInt(daysToRent.getText());
         String time = LocalDateTime.now().toString();
 
-        Optional<Rental> opt = findRentalById(idR);
+        Optional<Rental> opt = rentalRepository.findById(idR);
         if (opt.isPresent()) {
-            Rental m = opt.get();
-            if (m.getLevel() == 2) {
-                double Level2Price = Level2PriceP.calcPrice(m.getPrice());
-                m.setTotalprice(Level2Price * days);
+            Rental rental = opt.get();
+            if (rental.getLevel() == 2) {
+                double level2Price = Level2PriceP.calcPrice(rental.getPrice());
+                rental.setTotalPrice(level2Price * days);
             }
-            else { double NormalPrice = NormalPriceP.calcPrice(m.getPrice());
-                m.setTotalprice(NormalPrice * days);
+            else { double normalPrice = NormalPriceP.calcPrice(rental.getPrice());
+                rental.setTotalPrice(normalPrice * days);
             }
 
-            m.setEndTime(time);
-            m.setDaysToRent(days);
-            rTable.refresh();
+            rental.setEndTime(time);
+            rental.setDaysToRent(days);
+            rentalRepository.updateRental(rental);
+            rentalList.setAll(rentalRepository.readRental());
             id.clear();
             daysToRent.clear();
             return true;
         }
         return false;
-    }
-
-    public void showRevenue(double totalRevenue, Label labelRevenue){
-        for (Rental rental : rentalList) {
-            totalRevenue = totalRevenue + rental.getTotalPrice();
-        }
-        labelRevenue.setText(Double.toString(totalRevenue));
     }
 
 }

@@ -1,8 +1,10 @@
 package com.ME;
 import com.ME.entity.*;
-import com.ME.exception.CarNotFoundException;
 import com.ME.repo.*;
-import com.ME.service.*;
+import com.ME.service.InventoryService;
+import com.ME.service.MembershipService;
+import com.ME.service.RentalService;
+import com.ME.service.RentalType;
 import com.ME.util.HibernateUtil;
 import com.ME.util.Validate;
 import javafx.application.Application;
@@ -43,6 +45,7 @@ public class Main extends Application {
     private String daysToRent = "Antal dagar hyra";
     private String rentalNumber = "Hyrnummer";
     private ComboBox<RentalType> rentalTypeCombo = new ComboBox<>();
+    TableView<Rental> rTable = new TableView<>();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -137,10 +140,11 @@ public class Main extends Application {
         tab3.setClosable(false);
 
         Tab tab4 = new Tab("Intäkter");
-        //labelRevenue.setPadding(new Insets(10));
+
         Button getRevenueButton = new Button("Visa totala intäkter");
         getRevenueButton.setOnAction(e -> {
-            rentalService.showRevenue(totalRevenue, labelRevenue);
+            double totalRevenue = rentalRepo.getTotalRevenue();
+            labelRevenue.setText(Double.toString(totalRevenue));
         });
 
         VBox vBoxRevenue = new VBox();
@@ -215,7 +219,10 @@ public class Main extends Application {
         lvlInput.setPromptText("Användarnivå 1-2");
         lvlInput.setMinWidth(200);
 
-        //Knappar
+        //Knappar "Ta bort medlem", "Lägg till medlem" och "Sök medlem"
+        Button deleteButton = new Button("Ta bort");
+        deleteButton.setOnAction(e -> membershipService.deleteButtonClicked(mTable, rTable));
+
         Button addButton = new Button("Lägg till medlem");
         addButton.setOnAction(e -> {
             if (nameInput.getText().isEmpty()) {
@@ -231,11 +238,8 @@ public class Main extends Application {
             }
         });
 
-        Button deleteButton = new Button("Ta bort");
-        deleteButton.setOnAction(e -> membershipService.deleteButtonClicked(mTable));
 
         Button searchButton = new Button("Sök medlem");
-
         searchButton.setOnAction(e -> {
             Optional<Member> found = memberRepo.findByName(searchName.getText());
 
@@ -723,7 +727,7 @@ public class Main extends Application {
         totalPriceColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         totalPriceColumnR.setOnEditCommit(e -> {
             Rental r = e.getRowValue();
-            r.setTotalprice(e.getNewValue());
+            r.setTotalPrice(e.getNewValue());
             rentalRepo.updateRental(r);
         });
 
@@ -754,7 +758,6 @@ public class Main extends Application {
             rentalRepo.updateRental(r);
         });
 
-        TableView<Rental> rTable = new TableView<>();
         rTable.setEditable(true);
         rTable.setItems(rentalService.getRentalList());
         rTable.getColumns().addAll(idColumnR, memberColumnR, rTypeColumnR, objColumnR, startColumnR, endColumnR, priceColumnR, totalPriceColumnR, lvlColumnR, daysToRentColumnR);
@@ -802,7 +805,7 @@ public class Main extends Application {
 
             val.isInt(rNumberInput, rentalNumber);
             val.isInt(daysInput, daysToRent);
-            rentalService.updateRental(rNumberInput, daysInput, rTable);
+            rentalService.updateRental(rNumberInput, daysInput);
             rNumberInput.clear();
             daysInput.clear();
         });

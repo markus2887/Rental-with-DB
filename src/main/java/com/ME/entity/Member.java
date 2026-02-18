@@ -14,7 +14,7 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Rental> rentals = new ArrayList<>();
 
     @Column(name = "name", nullable = false, length = 25)
@@ -62,6 +62,8 @@ public class Member {
     public void setHistory(String history) {
         this.history = history;
     }
+
+    public List<Rental> getRentals() { return rentals; }
 
 
 }

@@ -52,25 +52,34 @@ public class RentalRepositoryImpl implements RentalRepository {
             tx.commit();
         }
     }
-    /**
-     * Hämtar en Booking via dess id.
-     *
-     * - Returnerar Optional för att undvika null
-     * - Använder session.get → ger null om objektet inte finns
-     */
+
     public Optional<Rental> findById(long id) {
         try (Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.get(Rental.class, id));
         }
     }
+
     public Optional<Rental> findByRentalObjectId(long objectId, String rentalType) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createNativeQuery(
-                            "SELECT * FROM rentals WHERE rentalObjectId = :id AND rentalType = :type AND endTime = ''",
-                            Rental.class)
+            var tx = session.beginTransaction();
+            Optional<Rental> result = session.createNativeQuery("SELECT * FROM rentals WHERE rentalObjectId = :id AND rentalType = :type AND endTime = ''", Rental.class)
                     .setParameter("id", objectId)
                     .setParameter("type", rentalType)
                     .uniqueResultOptional();
+            tx.commit();
+            return result;
+        }
+    }
+    public double getTotalRevenue() {
+        try (Session session = sessionFactory.openSession()) {
+            var tx = session.beginTransaction();
+            Object result = session.createNativeQuery("SELECT SUM(totalPrice) FROM rentals").getSingleResult();
+            tx.commit();
+
+            if (result == null) {
+                return 0.0;
+            }
+            return ((Number) result).doubleValue();
         }
     }
 }

@@ -1,17 +1,13 @@
 package com.ME.service;
 
 import com.ME.entity.Car;
-import com.ME.entity.Member;
 import com.ME.entity.Movie;
 import com.ME.entity.Tool;
-import com.ME.exception.CarNotFoundException;
 import com.ME.repo.*;
-import com.ME.util.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-
 
 public class InventoryService {
 
@@ -24,13 +20,6 @@ public InventoryService (CarRepository carRepository, MovieRepository movieRepos
     this.movieRepository = movieRepository;
     this.toolRepository = toolRepository;
 }
-
-/* Kod innan ändring
-    CarRepositoryImpl cRepo = new CarRepositoryImpl(HibernateUtil.getSessionFactory());
-    MovieRepositoryImpl movieRepo = new MovieRepositoryImpl(HibernateUtil.getSessionFactory());
-    ToolRepositoryImpl tRepo = new ToolRepositoryImpl(HibernateUtil.getSessionFactory());
-*/
-
 
     private final ObservableList<Car> carList = FXCollections.observableArrayList();
     private final ObservableList<Movie> movieList = FXCollections.observableArrayList();

@@ -101,7 +101,7 @@ public class Rental {
         return totalPrice;
     }
 
-    public void setTotalprice(double totalPrice) {
+    public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

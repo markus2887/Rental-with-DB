@@ -1,8 +1,7 @@
 package com.ME.service;
 import com.ME.entity.Member;
+import com.ME.entity.Rental;
 import com.ME.repo.MemberRepository;
-import com.ME.repo.MemberRepositoryImpl;
-import com.ME.util.HibernateUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -10,8 +9,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 public class MembershipService {
-
-    //MemberRepositoryImpl mRepo = new MemberRepositoryImpl(HibernateUtil.getSessionFactory());
 
     private final MemberRepository memberRepository;
     private final ObservableList<Member> memberList = FXCollections.observableArrayList();
@@ -29,13 +26,13 @@ public class MembershipService {
         return memberList;
     }
 
+
     public Member addButtonClicked(TextField nameInput, TextField lvlInput, TableView<Member> mTable, Label labelResult) {
         String name = nameInput.getText();
         int lvl = Integer.parseInt(lvlInput.getText());
         Member member = new Member(name.trim(), lvl, "");
         memberRepository.saveMember(member);
         memberList.add(member);
-        //Läggs till automatiskt om medlemmen läggs till listan istället.. mTable.getItems().add(member);
         labelResult.setText("Medlem " + nameInput.getText() + " skapad!");
         nameInput.clear();
         lvlInput.clear();
@@ -43,7 +40,7 @@ public class MembershipService {
         return member;
     }
 
-    public void deleteButtonClicked(TableView<Member> mTable) {
+    public void deleteButtonClicked(TableView<Member> mTable, TableView<Rental> rTable) {
         Member selected = mTable.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
@@ -51,28 +48,7 @@ public class MembershipService {
         }
         memberRepository.deleteMember(selected);
         memberList.remove(selected);
-    }
-
-    public void searchMember(ObservableList<Member> membersList, String userName, Label labelResult) {
-        Member foundMember = membersList.stream()
-                .filter(m -> m.getName().equalsIgnoreCase(userName))
-                .findFirst()
-                .orElse(null);
-
-        if (foundMember != null) {
-            labelResult.setText("Hittade användarnamn " + foundMember.getName() + " med ID nr: " + foundMember.getId() + " och medlemsnivå: " + foundMember.getLevel());
-        } else {
-            labelResult.setText("Användarnamnet '" + userName + "' hittades tyvärr inte.");
-        }
-    }
-
-    public Member searchMemberR(String userName, ObservableList<Member> memberListIn) {
-        Member foundMember = memberListIn.stream()
-                .filter(m -> m.getName().equalsIgnoreCase(userName))
-                .findFirst()
-                .orElse(null);
-
-        return foundMember;
+        rTable.refresh();
     }
 
 }
