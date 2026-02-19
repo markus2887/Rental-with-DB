@@ -38,9 +38,6 @@ public class RentalService {
 
     private String time;
 
-    MemberRepository memberRepo = new MemberRepositoryImpl(sessionFactory);
-    MembershipService mSer = new MembershipService(memberRepo);
-
     PricePolicy NormalPriceP = new NormalPricePolicy();
     PricePolicy Level2PriceP = new Level2PricePolicy();
 

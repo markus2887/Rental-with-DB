@@ -27,17 +27,21 @@ public class MembershipService {
     }
 
 
-    public Member addButtonClicked(TextField nameInput, TextField lvlInput, TableView<Member> mTable, Label labelResult) {
+    public void addButtonClicked(TextField nameInput, TextField lvlInput, TableView<Member> mTable, Label labelResult) {
         String name = nameInput.getText();
         int lvl = Integer.parseInt(lvlInput.getText());
-        Member member = new Member(name.trim(), lvl, "");
-        memberRepository.saveMember(member);
-        memberList.add(member);
+
+        saveMember(name, lvl);
+
         labelResult.setText("Medlem " + nameInput.getText() + " skapad!");
         nameInput.clear();
         lvlInput.clear();
+    }
 
-        return member;
+    public void saveMember(String name, int lvl) {
+        Member member = new Member(name.trim(), lvl, "");
+        memberRepository.saveMember(member);
+        memberList.add(member);
     }
 
     public void deleteButtonClicked(TableView<Member> mTable, TableView<Rental> rTable) {
