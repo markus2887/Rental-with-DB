@@ -12,5 +12,5 @@ public interface RentalRepository {
     void deleteRental(Rental rental);
     Optional<Rental> findById(long id);
     Optional<Rental> findByRentalObjectId(long id, String rentalType);
-    double getTotalRevenue();
+    double getTotalRevenueDB();
 }

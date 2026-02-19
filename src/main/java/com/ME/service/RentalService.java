@@ -133,4 +133,9 @@ public class RentalService {
         return false;
     }
 
+    public double getTotalRevenue(){
+        double revenue = rentalRepository.getTotalRevenueDB();
+        return revenue;
+    }
+
 }

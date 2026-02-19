@@ -70,7 +70,7 @@ public class RentalRepositoryImpl implements RentalRepository {
             return result;
         }
     }
-    public double getTotalRevenue() {
+    public double getTotalRevenueDB() {
         try (Session session = sessionFactory.openSession()) {
             var tx = session.beginTransaction();
             Object result = session.createNativeQuery("SELECT SUM(totalPrice) FROM rentals").getSingleResult();

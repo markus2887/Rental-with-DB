@@ -8,6 +8,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
+import java.util.Optional;
+
 public class MembershipService {
 
     private final MemberRepository memberRepository;
@@ -53,6 +55,16 @@ public class MembershipService {
         memberRepository.deleteMember(selected);
         memberList.remove(selected);
         rTable.refresh();
+    }
+
+    public String searchMemberByName(String name) {
+        Optional<Member> memberFound = memberRepository.findByName(name);
+
+        if (memberFound.isPresent()) {
+            return "Hittade medlemmen " + memberFound.get().getName() + " med medlemsnivå " + memberFound.get().getLevel() + " och historik:\n" + memberFound.get().getHistory() + ".";
+        } else {
+            return(name + " hittades inte tyvärr.");
+        }
     }
 
 }

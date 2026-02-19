@@ -38,7 +38,6 @@ public class Main extends Application {
     private Label labelErrorNewTool = new Label();
     private Label labelErrorRent = new Label();
     private Label labelErrorMember =  new Label();
-    private double totalRevenue = 0;
     private String price = "Pris/dag";
     private String lvl = "Användarnivå 1-2";
     private String carInput = "Bil/film/verktygsnummer";
@@ -143,7 +142,7 @@ public class Main extends Application {
 
         Button getRevenueButton = new Button("Visa totala intäkter");
         getRevenueButton.setOnAction(e -> {
-            double totalRevenue = rentalRepo.getTotalRevenue();
+            double totalRevenue = rentalService.getTotalRevenue();
             labelRevenue.setText(Double.toString(totalRevenue));
         });
 
@@ -238,16 +237,10 @@ public class Main extends Application {
             }
         });
 
-
         Button searchButton = new Button("Sök medlem");
         searchButton.setOnAction(e -> {
-            Optional<Member> found = memberRepo.findByName(searchName.getText());
-
-            if (found.isPresent()) {
-                labelResult.setText("Hittade medlem med namn " + found.get().getName());
-            } else {
-                labelResult.setText("Ingen medlem hittades");
-            }
+            String resultText = membershipService.searchMemberByName(searchName.getText());
+            labelResult.setText(resultText);
         });
 
 
