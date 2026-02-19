@@ -11,13 +11,13 @@ public class Tool {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", length = 4, nullable = false)
     private double price;
 
-    @Column(name = "description", length = 300)
+    @Column(name = "description", length = 1000)
     private String description;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
     @Column(name = "fromYear", length = 4)

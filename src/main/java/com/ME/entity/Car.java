@@ -11,19 +11,19 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", length = 4, nullable = false)
     private double price;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", length = 300)
     private String description;
 
-    @Column(name = "brand", nullable = false)
+    @Column(name = "brand", length = 20, nullable = false)
     private String brand;
 
-    @Column(name = "model", nullable = false)
+    @Column(name = "model", length = 30, nullable = false)
     private String model;
 
-    @Column(name = "releaseYear")
+    @Column(name = "releaseYear", length = 4)
     private String releaseYear;
 
     @Column(name = "color", nullable = false)

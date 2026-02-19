@@ -18,22 +18,22 @@ public class Rental {
     @Column(name = "rentalObjectId", nullable = false)
     private Long rentalObjectId;
 
-    @Column(name = "startTime", nullable = false)
+    @Column(name = "startTime", length = 15, nullable = false)
     private String startTime;
 
-    @Column(name = "endTime")
+    @Column(name = "endTime", length = 15)
     private String endTime;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", length = 5, nullable = false)
     private double price;
 
-    @Column(name = "totalPrice")
+    @Column(name = "totalPrice", length = 7)
     private double totalPrice;
 
-    @Column(name = "level", nullable = false)
+    @Column(name = "level", length = 1, nullable = false)
     private int level;
 
-    @Column(name = "daysToRent")
+    @Column(name = "daysToRent", length = 4)
     private int daysToRent;
 
     @Enumerated(EnumType.STRING)

@@ -8,7 +8,7 @@ public class PricePolicyTest {
 
     @Test
     void calcPriceMethod_ShouldGiveTwentyfivePercentDiscount() {
-        PricePolicy policy = new Level2PricePolicy();
+        PricePolicy policy = new LevelTwoPricePolicy();
 
         double result = policy.calcPrice(100.0);
 

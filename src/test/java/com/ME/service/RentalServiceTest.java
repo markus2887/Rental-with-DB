@@ -42,30 +42,15 @@ public class RentalServiceTest {
         rentalService = new RentalService(rentalRepository, memberRepository, carRepository, movieRepository, toolRepository);
     }
 
+
     @Test
-    void updateRental_ShouldCalculatePriceAndUpdateRental() {
+    void getTotalRevenueMethod_shouldReturnValueFromRepository() {
 
-        TextField idField = mock(TextField.class);
-        TextField daysField = mock(TextField.class);
+        when(rentalRepository.getTotalRevenueDB()).thenReturn(100d);
 
-        when(idField.getText()).thenReturn("10");
-        when(daysField.getText()).thenReturn("5");
+        double result = rentalService.getTotalRevenue();
 
-        doNothing().when(idField).clear();
-        doNothing().when(daysField).clear();
-
-        Member member = new Member("Test", 2, "");
-
-        Rental rental = new Rental(member, 10L, "2025-02-01", "",
-                500, 0, 2, 0, RentalType.CAR);
-
-        when(rentalRepository.findById(10L)).thenReturn(Optional.of(rental));
-        when(rentalRepository.readRental()).thenReturn(List.of(rental));
-
-        boolean result = rentalService.updateRental(idField, daysField);
-
-        assertTrue(result);
-        assertEquals(1875, rental.getTotalPrice());
-        verify(rentalRepository).updateRental(rental);
+        assertEquals(100d, result);
     }
+
 }

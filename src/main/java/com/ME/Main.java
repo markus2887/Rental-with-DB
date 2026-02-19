@@ -220,7 +220,10 @@ public class Main extends Application {
 
         //Knappar "Ta bort medlem", "Lägg till medlem" och "Sök medlem"
         Button deleteButton = new Button("Ta bort");
-        deleteButton.setOnAction(e -> membershipService.deleteButtonClicked(mTable, rTable));
+        deleteButton.setOnAction(e -> {
+            membershipService.deleteButtonClicked(mTable);
+            rentalService.updateRentalList();
+        });
 
         Button addButton = new Button("Lägg till medlem");
         addButton.setOnAction(e -> {

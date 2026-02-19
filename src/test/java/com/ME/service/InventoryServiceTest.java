@@ -31,10 +31,6 @@ class InventoryServiceTest {
         inventoryService = new InventoryService(carRepository, movieRepository, toolRepository);
     }
 
-    /**
-     * Scenario: Sätet är ledigt
-     * Förväntat: Booking ska skapas och sparas via repository
-     */
 
     @Test
     void loadCarMethod_ShouldFillListNamedCars() {

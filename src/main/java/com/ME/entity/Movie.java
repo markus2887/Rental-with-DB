@@ -10,19 +10,19 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", length = 3, nullable = false)
     private double price;
 
-    @Column(name = "description", length = 1000)
+    @Column(name = "description", length = 3000)
     private String description;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", length = 30, nullable = false)
     private String title;
 
-    @Column(name = "genre", nullable = false)
+    @Column(name = "genre", length = 30, nullable = false)
     private String genre;
 
-    @Column(name = "RelYear", nullable = false)
+    @Column(name = "RelYear", length = 4, nullable = false)
     private String relYear;
 
     @Enumerated(EnumType.STRING)

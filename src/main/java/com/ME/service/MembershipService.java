@@ -46,7 +46,7 @@ public class MembershipService {
         memberList.add(member);
     }
 
-    public void deleteButtonClicked(TableView<Member> mTable, TableView<Rental> rTable) {
+    public void deleteButtonClicked(TableView<Member> mTable) {
         Member selected = mTable.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
@@ -54,7 +54,6 @@ public class MembershipService {
         }
         memberRepository.deleteMember(selected);
         memberList.remove(selected);
-        rTable.refresh();
     }
 
     public String searchMemberByName(String name) {

@@ -17,13 +17,13 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Rental> rentals = new ArrayList<>();
 
-    @Column(name = "name", nullable = false, length = 25)
+    @Column(name = "name", length = 25, nullable = false)
     private String name;
 
-    @Column(name = "level", nullable = false, length = 1)
+    @Column(name = "level", length = 1, nullable = false)
     private int level;
 
-    @Column(name = "history", nullable = true)
+    @Column(name = "history", length = 3000)
     private String history;
 
     protected Member() {

@@ -39,7 +39,8 @@ public class RentalService {
     private String time;
 
     PricePolicy NormalPriceP = new NormalPricePolicy();
-    PricePolicy Level2PriceP = new Level2PricePolicy();
+    PricePolicy LevelTwoPriceP = new LevelTwoPricePolicy();
+    PricePolicy LevelThreePriceP = new LevelThreePricePolicy();
 
 
     public ObservableList<Rental> getRentalList() {
@@ -114,12 +115,22 @@ public class RentalService {
         Optional<Rental> opt = rentalRepository.findById(idR);
         if (opt.isPresent()) {
             Rental rental = opt.get();
-            if (rental.getLevel() == 2) {
-                double level2Price = Level2PriceP.calcPrice(rental.getPrice());
-                rental.setTotalPrice(level2Price * days);
-            }
-            else { double normalPrice = NormalPriceP.calcPrice(rental.getPrice());
-                rental.setTotalPrice(normalPrice * days);
+            if (rental.getLevel() > 3) { rental.setLevel(3); }
+            if (rental.getLevel() < 1) { rental.setLevel(1); }
+
+            switch (rental.getLevel()) {
+                case 1 -> {
+                    double normalPrice = NormalPriceP.calcPrice(rental.getPrice());
+                    rental.setTotalPrice(normalPrice * days);
+                }
+                case 2 -> {
+                    double levelTwoPrice = LevelTwoPriceP.calcPrice(rental.getPrice());
+                    rental.setTotalPrice(levelTwoPrice * days);
+                }
+                case 3 -> {
+                    double levelThreePrice = LevelThreePriceP.calcPrice(rental.getPrice());
+                    rental.setTotalPrice(levelThreePrice * days);
+                }
             }
 
             rental.setEndTime(time);
@@ -138,4 +149,7 @@ public class RentalService {
         return revenue;
     }
 
+    public void updateRentalList() {
+        rentalList.setAll(rentalRepository.readRental());
+    }
 }
