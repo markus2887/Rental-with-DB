@@ -149,7 +149,4 @@ public class RentalService {
         return revenue;
     }
 
-    public void updateRentalList() {
-        rentalList.setAll(rentalRepository.readRental());
-    }
 }

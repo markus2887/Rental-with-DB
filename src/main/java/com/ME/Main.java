@@ -222,7 +222,7 @@ public class Main extends Application {
         Button deleteButton = new Button("Ta bort");
         deleteButton.setOnAction(e -> {
             membershipService.deleteButtonClicked(mTable);
-            rentalService.updateRentalList();
+            rentalService.loadRental();
         });
 
         Button addButton = new Button("Lägg till medlem");

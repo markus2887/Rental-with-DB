@@ -18,10 +18,10 @@ public class Rental {
     @Column(name = "rentalObjectId", nullable = false)
     private Long rentalObjectId;
 
-    @Column(name = "startTime", length = 15, nullable = false)
+    @Column(name = "startTime", length = 30, nullable = false)
     private String startTime;
 
-    @Column(name = "endTime", length = 15)
+    @Column(name = "endTime", length = 30)
     private String endTime;
 
     @Column(name = "price", length = 5, nullable = false)
