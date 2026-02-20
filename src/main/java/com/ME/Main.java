@@ -39,7 +39,7 @@ public class Main extends Application {
     private Label labelErrorRent = new Label();
     private Label labelErrorMember =  new Label();
     private String price = "Pris/dag";
-    private String lvl = "Användarnivå 1-2";
+    private String lvl = "Användarnivå 1-3";
     private String carInput = "Bil/film/verktygsnummer";
     private String daysToRent = "Antal dagar hyra";
     private String rentalNumber = "Hyrnummer";
@@ -215,7 +215,7 @@ public class Main extends Application {
         nameInput.setMinWidth(100);
 
         lvlInput = new TextField();
-        lvlInput.setPromptText("Användarnivå 1-2");
+        lvlInput.setPromptText("Användarnivå 1-3");
         lvlInput.setMinWidth(200);
 
         //Knappar "Ta bort medlem", "Lägg till medlem" och "Sök medlem"
