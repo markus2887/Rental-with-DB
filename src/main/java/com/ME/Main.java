@@ -21,9 +21,11 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.geometry.Insets;
+import javafx.util.converter.LocalDateTimeStringConverter;
 import javafx.util.converter.LongStringConverter;
 import org.hibernate.SessionFactory;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class Main extends Application {
@@ -110,7 +112,7 @@ public class Main extends Application {
 
         //Lägg till en uthyrning
         Optional<Member> me = memberRepo.findByName("Markus");
-        rentalRepo.saveRental(new Rental(me.get(), 1L, "2026-02-02 16:02", "", 500, 0, 2, 0, RentalType.CAR));
+        rentalRepo.saveRental(new Rental(me.get(), 1L, LocalDateTime.now(), null, 500, 0, 2, 0, RentalType.CAR));
         rentalService.loadRental();
 
 
@@ -688,20 +690,20 @@ public class Main extends Application {
             rentalRepo.updateRental(r);
         });
 
-        TableColumn<Rental, String> startColumnR = new TableColumn<>("Starttid");
+        TableColumn<Rental, LocalDateTime> startColumnR = new TableColumn<>("Starttid");
         startColumnR.setMinWidth(170);
         startColumnR.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        startColumnR.setCellFactory(TextFieldTableCell.forTableColumn());
+        startColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateTimeStringConverter()));
         startColumnR.setOnEditCommit(e -> {
             Rental r = e.getRowValue();
             r.setStartTime(e.getNewValue());
             rentalRepo.updateRental(r);
         });
 
-        TableColumn<Rental, String> endColumnR = new TableColumn<>("Sluttid");
+        TableColumn<Rental, LocalDateTime> endColumnR = new TableColumn<>("Sluttid");
         endColumnR.setMinWidth(170);
         endColumnR.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        endColumnR.setCellFactory(TextFieldTableCell.forTableColumn());
+        endColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateTimeStringConverter()));
         endColumnR.setOnEditCommit(e -> {
             Rental r = e.getRowValue();
             r.setEndTime(e.getNewValue());
@@ -736,18 +738,9 @@ public class Main extends Application {
             rentalRepo.updateRental(r);
         });
 
-        TableColumn<Rental, Integer> daysToRentColumnR = new TableColumn<>("Uthyrda dagar");
+        TableColumn<Rental, Double> daysToRentColumnR = new TableColumn<>("Uthyrda dagar");
         daysToRentColumnR.setCellValueFactory(new PropertyValueFactory<>("daysToRent"));
-        daysToRentColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        daysToRentColumnR.setOnEditCommit(e -> {
-            Rental r = e.getRowValue();
-            r.setDaysToRent(e.getNewValue());
-            rentalRepo.updateRental(r);
-        });
-
-        TableColumn<Rental, Integer> rentalTypeColumnR = new TableColumn<>("Hyrtyp");
-        daysToRentColumnR.setCellValueFactory(new PropertyValueFactory<>("daysToRent"));
-        daysToRentColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        daysToRentColumnR.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         daysToRentColumnR.setOnEditCommit(e -> {
             Rental r = e.getRowValue();
             r.setDaysToRent(e.getNewValue());
@@ -793,23 +786,19 @@ public class Main extends Application {
 
         TextField rNumberInput = new TextField();
         rNumberInput.setPromptText("Hyrnummer");
-        TextField daysInput = new TextField();
-        daysInput.setPromptText("Antal dagar hyra");
 
         Button endButtonR = new Button("Avsluta hyrperiod");
         endButtonR.setOnAction(e -> {
 
             val.isInt(rNumberInput, rentalNumber);
-            val.isInt(daysInput, daysToRent);
-            rentalService.updateRental(rNumberInput, daysInput);
+            rentalService.updateRental(rNumberInput);
             rNumberInput.clear();
-            daysInput.clear();
         });
 
         HBox hBoxR2 = new HBox();
         hBoxR2.setPadding(new javafx.geometry.Insets(10,10,10,10));
         hBoxR2.setSpacing(10);
-        hBoxR2.getChildren().addAll(rNumberInput, daysInput, endButtonR);
+        hBoxR2.getChildren().addAll(rNumberInput, endButtonR);
 
         VBox vBoxRental = new VBox();
         vBoxRental.setSpacing(10);

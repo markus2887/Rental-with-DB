@@ -3,6 +3,8 @@ package com.ME.entity;
 import com.ME.service.RentalType;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "rentals")
 public class Rental {
@@ -19,10 +21,10 @@ public class Rental {
     private Long rentalObjectId;
 
     @Column(name = "startTime", length = 30, nullable = false)
-    private String startTime;
+    private LocalDateTime startTime;
 
     @Column(name = "endTime", length = 30)
-    private String endTime;
+    private LocalDateTime endTime;
 
     @Column(name = "price", length = 5, nullable = false)
     private double price;
@@ -34,7 +36,7 @@ public class Rental {
     private int level;
 
     @Column(name = "daysToRent", length = 4)
-    private int daysToRent;
+    private double daysToRent;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,7 +45,7 @@ public class Rental {
     protected Rental(){
     }
 
-    public Rental(Member member, Long rentalObjectId, String startTime, String endTime, double price, double totalPrice, int level, int daysToRent, RentalType rentalType) {
+    public Rental(Member member, Long rentalObjectId, LocalDateTime startTime, LocalDateTime endTime, double price, double totalPrice, int level, double daysToRent, RentalType rentalType) {
         this.member = member;
         this.rentalObjectId = rentalObjectId;
         this.startTime = startTime;
@@ -73,19 +75,19 @@ public class Rental {
         this.rentalObjectId = rentalObjectId;
     }
 
-    public String getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public String getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
@@ -113,11 +115,11 @@ public class Rental {
         this.level = level;
     }
 
-    public void setDaysToRent(int daysToRent) {
+    public void setDaysToRent(double daysToRent) {
         this.daysToRent = daysToRent;
     }
 
-    public int getDaysToRent() {
+    public double getDaysToRent() {
         return daysToRent;
     }
 

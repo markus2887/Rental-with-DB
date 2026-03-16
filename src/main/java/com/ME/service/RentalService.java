@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import org.hibernate.SessionFactory;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class RentalService {
 
     private ObservableList<Rental> rentalList = FXCollections.observableArrayList();
 
-    private String time;
+    private LocalDateTime time;
 
     PricePolicy NormalPriceP = new NormalPricePolicy();
     PricePolicy LevelTwoPriceP = new LevelTwoPricePolicy();
@@ -55,7 +56,7 @@ public class RentalService {
         try {
         RentalType typeChoice = rentalType.getValue();
         String name = nameInputR.getText();
-        time = LocalDateTime.now().toString();
+        time = LocalDateTime.now();
         Long rObject = Long.parseLong(objInputR.getText());
 
         Member foundMember = memberRepository.findByName(name)
@@ -71,7 +72,7 @@ public class RentalService {
                 Car foundCar = carRepository.findById(rObject)
                         .orElseThrow(() -> new CarNotFoundException("Bil nummer " +rObject + " finns inte. Försök med en annan bil."));
 
-                Rental newRental = new Rental(foundMember, rObject, time, "", foundCar.getPrice(), 0, foundMember.getLevel(), 0, RentalType.CAR);
+                Rental newRental = new Rental(foundMember, rObject, time, null, foundCar.getPrice(), 0, foundMember.getLevel(), 0, RentalType.CAR);
                 rentalRepository.saveRental(newRental);
                 rentalList.add(newRental);
                 nameInputR.clear();
@@ -83,7 +84,7 @@ public class RentalService {
                 Movie foundMovie = movieRepository.findById(rObject)
                         .orElseThrow(() -> new MovieNotFoundException("Film nummer " +rObject + " finns inte. Försök med en annan film."));
 
-                Rental newRental = new Rental(foundMember, rObject, time, "", foundMovie.getPrice(), 0, foundMember.getLevel(), 0, RentalType.MOVIE);
+                Rental newRental = new Rental(foundMember, rObject, time, null, foundMovie.getPrice(), 0, foundMember.getLevel(), 0, RentalType.MOVIE);
                 rentalRepository.saveRental(newRental);
                 rentalList.add(newRental);
 
@@ -94,7 +95,7 @@ public class RentalService {
             case TOOL -> {
                 Tool foundTool = toolRepository.findById(rObject)
                         .orElseThrow(() -> new ToolNotFoundException("Verktyg nummer " +rObject + " finns inte. Försök med ett annat verktyg."));
-                Rental newRental = new Rental(foundMember, rObject, time, "", foundTool.getPrice(), 0, foundMember.getLevel(), 0, RentalType.TOOL);
+                Rental newRental = new Rental(foundMember, rObject, time, null, foundTool.getPrice(), 0, foundMember.getLevel(), 0, RentalType.TOOL);
                 rentalRepository.saveRental(newRental);
                 rentalList.add(newRental);
                 nameInputR.clear();
@@ -107,14 +108,21 @@ public class RentalService {
         }
     }
 
-    public boolean updateRental(TextField id, TextField daysToRent) {
+    public boolean updateRental(TextField id) {
         Long idR = Long.parseLong(id.getText());
-        int days = Integer.parseInt(daysToRent.getText());
-        String time = LocalDateTime.now().toString();
+        //int days = Integer.parseInt(daysToRent.getText());
+        LocalDateTime time = LocalDateTime.now();
 
         Optional<Rental> opt = rentalRepository.findById(idR);
         if (opt.isPresent()) {
             Rental rental = opt.get();
+            rental.setEndTime(time);
+            long minutes = Duration.between(rental.getStartTime(), rental.getEndTime()).toMinutes();
+            double hours = minutes / 60.0;
+            double days= hours /24;
+            days = Math.round(days * 10000.0) / 10000.0;
+
+            rental.setDaysToRent(days);
             if (rental.getLevel() > 3) { rental.setLevel(3); }
             if (rental.getLevel() < 1) { rental.setLevel(1); }
 
@@ -133,12 +141,9 @@ public class RentalService {
                 }
             }
 
-            rental.setEndTime(time);
-            rental.setDaysToRent(days);
             rentalRepository.updateRental(rental);
             rentalList.setAll(rentalRepository.readRental());
             id.clear();
-            daysToRent.clear();
             return true;
         }
         return false;
